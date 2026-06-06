@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.ProcedimentoController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <HBox spacing="10">
+        <TextField fx:id="txtBusca" promptText="Buscar..." HBox.hgrow="ALWAYS"/>
+        <Button text="Buscar" onAction="#buscar"/>
+    </HBox>
+    <TableView fx:id="tabelaProcedimentos">
+        <columns>
+            <TableColumn fx:id="colId" text="ID"/>
+            <TableColumn fx:id="colNome" text="Nome"/>
+            <TableColumn fx:id="colValor" text="Valor"/>
+        </columns>
+    </TableView>
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNome" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Valor:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtValor" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    </GridPane>
+    <HBox spacing="10">
+        <Button text="Salvar" onAction="#salvar"/>
+        <Button text="Editar" onAction="#editar"/>
+        <Button text="Excluir" onAction="#excluir"/>
+        <Button text="Limpar" onAction="#limpar"/>
+    </HBox>
+</VBox>
