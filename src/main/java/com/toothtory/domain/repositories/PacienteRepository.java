@@ -7,8 +7,8 @@ import java.util.Optional;
 public interface PacienteRepository {
     void save(Paciente paciente);
     void update(Paciente paciente);
-    void delete(String id);
-    Optional<Paciente> findById(String id);
+    void delete(Long id);
+    Optional<Paciente> findById(Long id);
     List<Paciente> findAll();
     List<Paciente> searchByName(String nome);
 }

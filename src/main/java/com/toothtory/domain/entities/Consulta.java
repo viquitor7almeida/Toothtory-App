@@ -1,11 +1,10 @@
 package com.toothtory.domain.entities;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Consulta {
-    private String id;
-    private String pacienteId;
+    private Long id;
+    private Long pacienteId;
     private LocalDateTime dataHora;
     private String nomeProcedimento;
     private double valorProcedimento;
@@ -13,11 +12,10 @@ public class Consulta {
     private LocalDateTime dataCriacao;
 
     public Consulta() {
-        this.id = UUID.randomUUID().toString();
         this.dataCriacao = LocalDateTime.now();
     }
 
-    public Consulta(String id, String pacienteId, LocalDateTime dataHora, String nomeProcedimento, double valorProcedimento, String observacoes, LocalDateTime dataCriacao) {
+    public Consulta(Long id, Long pacienteId, LocalDateTime dataHora, String nomeProcedimento, double valorProcedimento, String observacoes, LocalDateTime dataCriacao) {
         this.id = id;
         this.pacienteId = pacienteId;
         this.dataHora = dataHora;
@@ -27,10 +25,10 @@ public class Consulta {
         this.dataCriacao = dataCriacao;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public String getPacienteId() { return pacienteId; }
-    public void setPacienteId(String pacienteId) { this.pacienteId = pacienteId; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getPacienteId() { return pacienteId; }
+    public void setPacienteId(Long pacienteId) { this.pacienteId = pacienteId; }
     public LocalDateTime getDataHora() { return dataHora; }
     public void setDataHora(LocalDateTime dataHora) { this.dataHora = dataHora; }
     public String getNomeProcedimento() { return nomeProcedimento; }

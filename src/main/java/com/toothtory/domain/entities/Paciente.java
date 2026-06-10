@@ -1,10 +1,9 @@
 package com.toothtory.domain.entities;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Paciente {
-    private String id;
+    private Long id;
     private String nome;
     private String endereco;
     private String email;
@@ -13,12 +12,11 @@ public class Paciente {
     private LocalDateTime dataAtualizacao;
 
     public Paciente() {
-        this.id = UUID.randomUUID().toString();
         this.dataCriacao = LocalDateTime.now();
         this.dataAtualizacao = LocalDateTime.now();
     }
 
-    public Paciente(String id, String nome, String endereco, String email, String celular, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+    public Paciente(Long id, String nome, String endereco, String email, String celular, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.nome = nome;
         this.endereco = endereco;
@@ -28,8 +26,8 @@ public class Paciente {
         this.dataAtualizacao = dataAtualizacao;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public String getEndereco() { return endereco; }

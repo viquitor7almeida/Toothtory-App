@@ -7,8 +7,8 @@ import java.util.Optional;
 public interface ProcedimentoRepository {
     void save(Procedimento procedimento);
     void update(Procedimento procedimento);
-    void delete(String id);
-    Optional<Procedimento> findById(String id);
+    void delete(Long id);
+    Optional<Procedimento> findById(Long id);
     List<Procedimento> findAll();
     List<Procedimento> searchByName(String nome);
 }

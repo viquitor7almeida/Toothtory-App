@@ -16,18 +16,18 @@ public class ProcedimentoService {
 
     public void salvar(Procedimento procedimento) {
         validarProcedimento(procedimento);
-        if (procedimento.getId() == null || findById(procedimento.getId()).isEmpty()) {
+        if (procedimento.getId() == null) {
             repository.save(procedimento);
         } else {
             repository.update(procedimento);
         }
     }
 
-    public void excluir(String id) {
+    public void excluir(Long id) {
         repository.delete(id);
     }
 
-    public Optional<Procedimento> findById(String id) {
+    public Optional<Procedimento> findById(Long id) {
         return repository.findById(id);
     }
 

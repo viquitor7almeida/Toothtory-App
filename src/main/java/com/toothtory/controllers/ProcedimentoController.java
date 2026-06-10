@@ -10,7 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class ProcedimentoController {
     @FXML private TableView<Procedimento> tabelaProcedimentos;
-    @FXML private TableColumn<Procedimento, String> colId;
+    @FXML private TableColumn<Procedimento, Long> colId;
     @FXML private TableColumn<Procedimento, String> colNome;
     @FXML private TableColumn<Procedimento, Double> colValor;
     @FXML private TextField txtBusca;
@@ -19,7 +19,7 @@ public class ProcedimentoController {
 
     private final ProcedimentoService service = new ProcedimentoService();
     private ObservableList<Procedimento> lista = FXCollections.observableArrayList();
-    private String idEditando = null;
+    private Long idEditando = null;
 
     @FXML
     public void initialize() {

@@ -13,17 +13,20 @@ import java.util.Optional;
 public class PacienteRepositoryImpl implements PacienteRepository {
     @Override
     public void save(Paciente paciente) {
-        String sql = "INSERT INTO pacientes (id, nome, endereco, email, celular, dataCriacao, dataAtualizacao) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO pacientes (nome, endereco, email, celular, dataCriacao, dataAtualizacao) VALUES (?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, paciente.getId());
-            stmt.setString(2, paciente.getNome());
-            stmt.setString(3, paciente.getEndereco());
-            stmt.setString(4, paciente.getEmail());
-            stmt.setString(5, paciente.getCelular());
-            stmt.setString(6, paciente.getDataCriacao().toString());
-            stmt.setString(7, paciente.getDataAtualizacao().toString());
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, paciente.getNome());
+            stmt.setString(2, paciente.getEndereco());
+            stmt.setString(3, paciente.getEmail());
+            stmt.setString(4, paciente.getCelular());
+            stmt.setString(5, paciente.getDataCriacao().toString());
+            stmt.setString(6, paciente.getDataAtualizacao().toString());
             stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                paciente.setId(rs.getLong(1));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,7 +42,7 @@ public class PacienteRepositoryImpl implements PacienteRepository {
             stmt.setString(3, paciente.getEmail());
             stmt.setString(4, paciente.getCelular());
             stmt.setString(5, LocalDateTime.now().toString());
-            stmt.setString(6, paciente.getId());
+            stmt.setLong(6, paciente.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,11 +50,11 @@ public class PacienteRepositoryImpl implements PacienteRepository {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM pacientes WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setLong(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,11 +62,11 @@ public class PacienteRepositoryImpl implements PacienteRepository {
     }
 
     @Override
-    public Optional<Paciente> findById(String id) {
+    public Optional<Paciente> findById(Long id) {
         String sql = "SELECT * FROM pacientes WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return Optional.of(extractPaciente(rs));
@@ -109,7 +112,7 @@ public class PacienteRepositoryImpl implements PacienteRepository {
 
     private Paciente extractPaciente(ResultSet rs) throws SQLException {
         Paciente p = new Paciente();
-        p.setId(rs.getString("id"));
+        p.setId(rs.getLong("id"));
         p.setNome(rs.getString("nome"));
         p.setEndereco(rs.getString("endereco"));
         p.setEmail(rs.getString("email"));

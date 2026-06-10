@@ -24,18 +24,18 @@ public class ConsultaService {
 
     public void salvar(Consulta consulta) {
         validarConsulta(consulta);
-        if (consulta.getId() == null || findById(consulta.getId()).isEmpty()) {
+        if (consulta.getId() == null) {
             repository.save(consulta);
         } else {
             repository.update(consulta);
         }
     }
 
-    public void excluir(String id) {
+    public void excluir(Long id) {
         repository.delete(id);
     }
 
-    public Optional<Consulta> findById(String id) {
+    public Optional<Consulta> findById(Long id) {
         return repository.findById(id);
     }
 
@@ -43,7 +43,7 @@ public class ConsultaService {
         return repository.findAll();
     }
 
-    public List<Consulta> buscarPorPaciente(String pacienteId) {
+    public List<Consulta> buscarPorPaciente(Long pacienteId) {
         return repository.findByPacienteId(pacienteId);
     }
 
@@ -75,7 +75,7 @@ public class ConsultaService {
         salvar(consulta);
     }
 
-    public void registrarConsultaComProcedimentoExistente(String pacienteId, LocalDateTime dataHora, String procedimentoId, String observacoes) {
+    public void registrarConsultaComProcedimentoExistente(Long pacienteId, LocalDateTime dataHora, Long procedimentoId, String observacoes) {
         Procedimento proc = procedimentoService.findById(procedimentoId)
                 .orElseThrow(() -> new IllegalArgumentException("Procedimento não encontrado"));
         Consulta consulta = new Consulta();
@@ -87,7 +87,7 @@ public class ConsultaService {
         salvar(consulta);
     }
 
-    public void registrarConsultaComProcedimentoManual(String pacienteId, LocalDateTime dataHora, String nomeProcedimento, double valor, String observacoes) {
+    public void registrarConsultaComProcedimentoManual(Long pacienteId, LocalDateTime dataHora, String nomeProcedimento, double valor, String observacoes) {
         Consulta consulta = new Consulta();
         consulta.setPacienteId(pacienteId);
         consulta.setDataHora(dataHora);
@@ -98,7 +98,7 @@ public class ConsultaService {
     }
 
     private void validarConsulta(Consulta consulta) {
-        if (consulta.getPacienteId() == null || consulta.getPacienteId().trim().isEmpty()) {
+        if (consulta.getPacienteId() == null) {
             throw new IllegalArgumentException("Paciente é obrigatório");
         }
         if (consulta.getDataHora() == null) {

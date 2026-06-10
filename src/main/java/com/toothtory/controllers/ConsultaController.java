@@ -17,7 +17,10 @@ import java.time.format.DateTimeFormatter;
 
 public class ConsultaController {
     @FXML private TableView<Consulta> tabelaConsultas;
-    @FXML private TableColumn<Consulta, String> colId, colPaciente, colProcedimento, colObservacoes;
+    @FXML private TableColumn<Consulta, Long> colId;
+    @FXML private TableColumn<Consulta, String> colPaciente;
+    @FXML private TableColumn<Consulta, String> colProcedimento;
+    @FXML private TableColumn<Consulta, String> colObservacoes;
     @FXML private TableColumn<Consulta, Double> colValor;
     @FXML private TableColumn<Consulta, LocalDateTime> colDataHora;
     @FXML private ComboBox<Paciente> comboPaciente;
@@ -37,6 +40,7 @@ public class ConsultaController {
     private ObservableList<Consulta> consultasList = FXCollections.observableArrayList();
     private ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
     private ObservableList<Procedimento> procedimentosList = FXCollections.observableArrayList();
+    private Long idEditando = null;
 
     @FXML
     public void initialize() {
@@ -86,14 +90,31 @@ public class ConsultaController {
             if (paciente == null) throw new IllegalArgumentException("Selecione um paciente");
             LocalDateTime dataHora = LocalDateTime.of(datePicker.getValue(), java.time.LocalTime.parse(txtHora.getText(), DateTimeFormatter.ofPattern("HH:mm")));
             String observacoes = txtObservacoes.getText();
-            if (rbProcedimentoExistente.isSelected()) {
-                Procedimento proc = comboProcedimento.getSelectionModel().getSelectedItem();
-                if (proc == null) throw new IllegalArgumentException("Selecione um procedimento");
-                consultaService.registrarConsultaComProcedimentoExistente(paciente.getId(), dataHora, proc.getId(), observacoes);
+            
+            if (idEditando != null) {
+                Consulta c = consultaService.findById(idEditando).orElse(new Consulta());
+                c.setPacienteId(paciente.getId());
+                c.setDataHora(dataHora);
+                c.setObservacoes(observacoes);
+                if (rbProcedimentoExistente.isSelected()) {
+                    Procedimento proc = comboProcedimento.getSelectionModel().getSelectedItem();
+                    if (proc == null) throw new IllegalArgumentException("Selecione um procedimento");
+                    c.setNomeProcedimento(proc.getNome());
+                    c.setValorProcedimento(proc.getValor());
+                } else {
+                    c.setNomeProcedimento(txtNomeProcedimentoManual.getText());
+                    c.setValorProcedimento(Double.parseDouble(txtValorManual.getText()));
+                }
+                consultaService.salvar(c);
+                idEditando = null;
             } else {
-                String nomeProc = txtNomeProcedimentoManual.getText();
-                double valor = Double.parseDouble(txtValorManual.getText());
-                consultaService.registrarConsultaComProcedimentoManual(paciente.getId(), dataHora, nomeProc, valor, observacoes);
+                if (rbProcedimentoExistente.isSelected()) {
+                    Procedimento proc = comboProcedimento.getSelectionModel().getSelectedItem();
+                    if (proc == null) throw new IllegalArgumentException("Selecione um procedimento");
+                    consultaService.registrarConsultaComProcedimentoExistente(paciente.getId(), dataHora, proc.getId(), observacoes);
+                } else {
+                    consultaService.registrarConsultaComProcedimentoManual(paciente.getId(), dataHora, txtNomeProcedimentoManual.getText(), Double.parseDouble(txtValorManual.getText()), observacoes);
+                }
             }
             limparFormulario();
             carregarConsultas();
@@ -113,6 +134,38 @@ public class ConsultaController {
         txtValorManual.clear();
         txtObservacoes.clear();
         rbProcedimentoExistente.setSelected(true);
+        idEditando = null;
+    }
+
+    @FXML
+    private void editarConsulta() {
+        Consulta sel = tabelaConsultas.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Selecione uma consulta.");
+            return;
+        }
+        Paciente p = pacienteService.findById(sel.getPacienteId()).orElse(null);
+        if (p != null) comboPaciente.getSelectionModel().select(p);
+        datePicker.setValue(sel.getDataHora().toLocalDate());
+        txtHora.setText(sel.getDataHora().toLocalTime().toString());
+        txtObservacoes.setText(sel.getObservacoes());
+        idEditando = sel.getId();
+        
+        boolean manual = true;
+        for (Procedimento proc : procedimentosList) {
+            if (proc.getNome().equals(sel.getNomeProcedimento()) && proc.getValor() == sel.getValorProcedimento()) {
+                comboProcedimento.getSelectionModel().select(proc);
+                manual = false;
+                break;
+            }
+        }
+        if (manual) {
+            rbProcedimentoManual.setSelected(true);
+            txtNomeProcedimentoManual.setText(sel.getNomeProcedimento());
+            txtValorManual.setText(String.valueOf(sel.getValorProcedimento()));
+        } else {
+            rbProcedimentoExistente.setSelected(true);
+        }
     }
 
     @FXML
@@ -126,6 +179,7 @@ public class ConsultaController {
         if (confirm.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
             consultaService.excluir(sel.getId());
             carregarConsultas();
+            limparFormulario();
         }
     }
 

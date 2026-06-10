@@ -16,18 +16,18 @@ public class PacienteService {
 
     public void salvar(Paciente paciente) {
         validarPaciente(paciente);
-        if (paciente.getId() == null || findById(paciente.getId()).isEmpty()) {
+        if (paciente.getId() == null) {
             repository.save(paciente);
         } else {
             repository.update(paciente);
         }
     }
 
-    public void excluir(String id) {
+    public void excluir(Long id) {
         repository.delete(id);
     }
 
-    public Optional<Paciente> findById(String id) {
+    public Optional<Paciente> findById(Long id) {
         return repository.findById(id);
     }
 

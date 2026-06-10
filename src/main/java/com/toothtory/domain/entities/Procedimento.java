@@ -1,22 +1,20 @@
 package com.toothtory.domain.entities;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Procedimento {
-    private String id;
+    private Long id;
     private String nome;
     private double valor;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;
 
     public Procedimento() {
-        this.id = UUID.randomUUID().toString();
         this.dataCriacao = LocalDateTime.now();
         this.dataAtualizacao = LocalDateTime.now();
     }
 
-    public Procedimento(String id, String nome, double valor, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+    public Procedimento(Long id, String nome, double valor, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.nome = nome;
         this.valor = valor;
@@ -24,8 +22,8 @@ public class Procedimento {
         this.dataAtualizacao = dataAtualizacao;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public double getValor() { return valor; }

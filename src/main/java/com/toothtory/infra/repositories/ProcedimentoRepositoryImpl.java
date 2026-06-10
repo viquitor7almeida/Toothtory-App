@@ -13,15 +13,18 @@ import java.util.Optional;
 public class ProcedimentoRepositoryImpl implements ProcedimentoRepository {
     @Override
     public void save(Procedimento procedimento) {
-        String sql = "INSERT INTO procedimentos (id, nome, valor, dataCriacao, dataAtualizacao) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO procedimentos (nome, valor, dataCriacao, dataAtualizacao) VALUES (?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, procedimento.getId());
-            stmt.setString(2, procedimento.getNome());
-            stmt.setDouble(3, procedimento.getValor());
-            stmt.setString(4, procedimento.getDataCriacao().toString());
-            stmt.setString(5, procedimento.getDataAtualizacao().toString());
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, procedimento.getNome());
+            stmt.setDouble(2, procedimento.getValor());
+            stmt.setString(3, procedimento.getDataCriacao().toString());
+            stmt.setString(4, procedimento.getDataAtualizacao().toString());
             stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                procedimento.setId(rs.getLong(1));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -35,7 +38,7 @@ public class ProcedimentoRepositoryImpl implements ProcedimentoRepository {
             stmt.setString(1, procedimento.getNome());
             stmt.setDouble(2, procedimento.getValor());
             stmt.setString(3, LocalDateTime.now().toString());
-            stmt.setString(4, procedimento.getId());
+            stmt.setLong(4, procedimento.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -43,11 +46,11 @@ public class ProcedimentoRepositoryImpl implements ProcedimentoRepository {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM procedimentos WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setLong(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -55,11 +58,11 @@ public class ProcedimentoRepositoryImpl implements ProcedimentoRepository {
     }
 
     @Override
-    public Optional<Procedimento> findById(String id) {
+    public Optional<Procedimento> findById(Long id) {
         String sql = "SELECT * FROM procedimentos WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return Optional.of(extractProcedimento(rs));
@@ -105,7 +108,7 @@ public class ProcedimentoRepositoryImpl implements ProcedimentoRepository {
 
     private Procedimento extractProcedimento(ResultSet rs) throws SQLException {
         Procedimento p = new Procedimento();
-        p.setId(rs.getString("id"));
+        p.setId(rs.getLong("id"));
         p.setNome(rs.getString("nome"));
         p.setValor(rs.getDouble("valor"));
         p.setDataCriacao(LocalDateTime.parse(rs.getString("dataCriacao")));
