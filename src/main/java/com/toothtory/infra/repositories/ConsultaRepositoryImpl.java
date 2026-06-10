@@ -13,17 +13,20 @@ import java.util.Optional;
 public class ConsultaRepositoryImpl implements ConsultaRepository {
     @Override
     public void save(Consulta consulta) {
-        String sql = "INSERT INTO consultas (id, pacienteId, dataHora, nomeProcedimento, valorProcedimento, observacoes, dataCriacao) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO consultas (pacienteId, dataHora, nomeProcedimento, valorProcedimento, observacoes, dataCriacao) VALUES (?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, consulta.getId());
-            stmt.setString(2, consulta.getPacienteId());
-            stmt.setString(3, consulta.getDataHora().toString());
-            stmt.setString(4, consulta.getNomeProcedimento());
-            stmt.setDouble(5, consulta.getValorProcedimento());
-            stmt.setString(6, consulta.getObservacoes());
-            stmt.setString(7, consulta.getDataCriacao().toString());
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setLong(1, consulta.getPacienteId());
+            stmt.setString(2, consulta.getDataHora().toString());
+            stmt.setString(3, consulta.getNomeProcedimento());
+            stmt.setDouble(4, consulta.getValorProcedimento());
+            stmt.setString(5, consulta.getObservacoes());
+            stmt.setString(6, consulta.getDataCriacao().toString());
             stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                consulta.setId(rs.getLong(1));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -34,12 +37,12 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
         String sql = "UPDATE consultas SET pacienteId=?, dataHora=?, nomeProcedimento=?, valorProcedimento=?, observacoes=? WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, consulta.getPacienteId());
+            stmt.setLong(1, consulta.getPacienteId());
             stmt.setString(2, consulta.getDataHora().toString());
             stmt.setString(3, consulta.getNomeProcedimento());
             stmt.setDouble(4, consulta.getValorProcedimento());
             stmt.setString(5, consulta.getObservacoes());
-            stmt.setString(6, consulta.getId());
+            stmt.setLong(6, consulta.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,11 +50,11 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM consultas WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setLong(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,11 +62,11 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
     }
 
     @Override
-    public Optional<Consulta> findById(String id) {
+    public Optional<Consulta> findById(Long id) {
         String sql = "SELECT * FROM consultas WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
+            stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return Optional.of(extractConsulta(rs));
@@ -91,12 +94,12 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
     }
 
     @Override
-    public List<Consulta> findByPacienteId(String pacienteId) {
+    public List<Consulta> findByPacienteId(Long pacienteId) {
         List<Consulta> consultas = new ArrayList<>();
         String sql = "SELECT * FROM consultas WHERE pacienteId=? ORDER BY dataHora DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, pacienteId);
+            stmt.setLong(1, pacienteId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 consultas.add(extractConsulta(rs));
@@ -144,8 +147,8 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
 
     private Consulta extractConsulta(ResultSet rs) throws SQLException {
         Consulta c = new Consulta();
-        c.setId(rs.getString("id"));
-        c.setPacienteId(rs.getString("pacienteId"));
+        c.setId(rs.getLong("id"));
+        c.setPacienteId(rs.getLong("pacienteId"));
         c.setDataHora(LocalDateTime.parse(rs.getString("dataHora")));
         c.setNomeProcedimento(rs.getString("nomeProcedimento"));
         c.setValorProcedimento(rs.getDouble("valorProcedimento"));

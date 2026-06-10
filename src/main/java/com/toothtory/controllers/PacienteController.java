@@ -10,7 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class PacienteController {
     @FXML private TableView<Paciente> tabelaPacientes;
-    @FXML private TableColumn<Paciente, String> colId;
+    @FXML private TableColumn<Paciente, Long> colId;
     @FXML private TableColumn<Paciente, String> colNome;
     @FXML private TableColumn<Paciente, String> colEmail;
     @FXML private TableColumn<Paciente, String> colCelular;
@@ -22,6 +22,7 @@ public class PacienteController {
 
     private final PacienteService service = new PacienteService();
     private ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
+    private Long idEditando = null;
 
     @FXML
     public void initialize() {
@@ -58,12 +59,19 @@ public class PacienteController {
         txtEndereco.clear();
         txtEmail.clear();
         txtCelular.clear();
+        idEditando = null;
     }
 
     @FXML
     private void salvarPaciente() {
         try {
-            Paciente p = new Paciente();
+            Paciente p;
+            if (idEditando != null) {
+                p = service.findById(idEditando).orElse(new Paciente());
+                idEditando = null;
+            } else {
+                p = new Paciente();
+            }
             p.setNome(txtNome.getText());
             p.setEndereco(txtEndereco.getText());
             p.setEmail(txtEmail.getText());
@@ -88,20 +96,7 @@ public class PacienteController {
         txtEndereco.setText(selecionado.getEndereco());
         txtEmail.setText(selecionado.getEmail());
         txtCelular.setText(selecionado.getCelular());
-        // Para atualizar, precisamos manter o id. Vamos usar um campo oculto ou salvar com id existente.
-        // Simples: ao salvar, se o paciente já existe, o serviço atualiza (baseado em id não nulo)
-        selecionado.setNome(txtNome.getText());
-        selecionado.setEndereco(txtEndereco.getText());
-        selecionado.setEmail(txtEmail.getText());
-        selecionado.setCelular(txtCelular.getText());
-        try {
-            service.salvar(selecionado);
-            limparFormulario();
-            carregarPacientes();
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Paciente atualizado.");
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", e.getMessage());
-        }
+        idEditando = selecionado.getId();
     }
 
     @FXML
@@ -115,6 +110,7 @@ public class PacienteController {
         if (confirm.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
             service.excluir(selecionado.getId());
             carregarPacientes();
+            limparFormulario();
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Paciente excluído.");
         }
     }

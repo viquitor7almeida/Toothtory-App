@@ -8,7 +8,7 @@ public class DatabaseInitializer {
     public static void initialize() {
         String createPacientes = """
             CREATE TABLE IF NOT EXISTS pacientes (
-                id TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL,
                 endereco TEXT,
                 email TEXT,
@@ -19,7 +19,7 @@ public class DatabaseInitializer {
         """;
         String createProcedimentos = """
             CREATE TABLE IF NOT EXISTS procedimentos (
-                id TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL,
                 valor REAL NOT NULL,
                 dataCriacao TEXT NOT NULL,
@@ -28,8 +28,8 @@ public class DatabaseInitializer {
         """;
         String createConsultas = """
             CREATE TABLE IF NOT EXISTS consultas (
-                id TEXT PRIMARY KEY,
-                pacienteId TEXT NOT NULL,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                pacienteId INTEGER NOT NULL,
                 dataHora TEXT NOT NULL,
                 nomeProcedimento TEXT NOT NULL,
                 valorProcedimento REAL NOT NULL,
