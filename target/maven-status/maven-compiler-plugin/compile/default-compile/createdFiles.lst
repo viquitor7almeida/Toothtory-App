@@ -1,6 +1,7 @@
 com/toothtory/MainApp.class
 com/toothtory/components/TopBar.class
 com/toothtory/domain/repositories/PacienteRepository.class
+com/toothtory/controllers/ConsultaController$2.class
 com/toothtory/infra/database/DatabaseConnection.class
 com/toothtory/domain/entities/Paciente.class
 com/toothtory/infra/database/DatabaseInitializer.class
@@ -18,4 +19,5 @@ com/toothtory/services/PacienteService.class
 com/toothtory/infra/repositories/PacienteRepositoryImpl.class
 com/toothtory/controllers/ProcedimentoController.class
 com/toothtory/domain/entities/Procedimento.class
+com/toothtory/controllers/ConsultaController$1.class
 com/toothtory/infra/repositories/ProcedimentoRepositoryImpl.class

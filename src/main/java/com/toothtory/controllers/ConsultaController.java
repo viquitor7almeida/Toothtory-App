@@ -6,13 +6,16 @@ import com.toothtory.services.ProcedimentoService;
 import com.toothtory.domain.entities.Consulta;
 import com.toothtory.domain.entities.Paciente;
 import com.toothtory.domain.entities.Procedimento;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class ConsultaController {
@@ -47,28 +50,24 @@ public class ConsultaController {
         configurarColunas();
         carregarComboBoxes();
         carregarConsultas();
-        grupoProcedimento = new ToggleGroup();
-        rbProcedimentoExistente.setToggleGroup(grupoProcedimento);
-        rbProcedimentoManual.setToggleGroup(grupoProcedimento);
-        rbProcedimentoExistente.setSelected(true);
-        comboProcedimento.setDisable(false);
-        txtNomeProcedimentoManual.setDisable(true);
-        txtValorManual.setDisable(true);
-        grupoProcedimento.selectedToggleProperty().addListener((obs, old, novo) -> {
-            boolean manual = novo == rbProcedimentoManual;
-            comboProcedimento.setDisable(!manual);
-            txtNomeProcedimentoManual.setDisable(!manual);
-            txtValorManual.setDisable(!manual);
-        });
+        configurarToggleGroup();
+        configurarStringConverterPaciente();
+        configurarStringConverterProcedimento();
     }
 
     private void configurarColunas() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colPaciente.setCellValueFactory(new PropertyValueFactory<>("pacienteId"));
         colDataHora.setCellValueFactory(new PropertyValueFactory<>("dataHora"));
         colProcedimento.setCellValueFactory(new PropertyValueFactory<>("nomeProcedimento"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valorProcedimento"));
         colObservacoes.setCellValueFactory(new PropertyValueFactory<>("observacoes"));
+
+        colPaciente.setCellValueFactory(cellData -> {
+            Long pacienteId = cellData.getValue().getPacienteId();
+            Paciente p = pacienteService.findById(pacienteId).orElse(null);
+            return new SimpleStringProperty(p == null ? "" : p.getNome());
+        });
+
         tabelaConsultas.setItems(consultasList);
     }
 
@@ -77,6 +76,51 @@ public class ConsultaController {
         comboPaciente.setItems(pacientesList);
         procedimentosList.setAll(procedimentoService.listarTodos());
         comboProcedimento.setItems(procedimentosList);
+    }
+
+    private void configurarToggleGroup() {
+        grupoProcedimento = new ToggleGroup();
+        rbProcedimentoExistente.setToggleGroup(grupoProcedimento);
+        rbProcedimentoManual.setToggleGroup(grupoProcedimento);
+        rbProcedimentoExistente.setSelected(true);
+        comboProcedimento.setDisable(false);
+        txtNomeProcedimentoManual.setDisable(true);
+        txtValorManual.setDisable(true);
+
+        grupoProcedimento.selectedToggleProperty().addListener((obs, old, novo) -> {
+            boolean manual = novo == rbProcedimentoManual;
+            comboProcedimento.setDisable(!manual);
+            txtNomeProcedimentoManual.setDisable(!manual);
+            txtValorManual.setDisable(!manual);
+        });
+    }
+
+    private void configurarStringConverterPaciente() {
+        comboPaciente.setConverter(new StringConverter<Paciente>() {
+            @Override
+            public String toString(Paciente paciente) {
+                return paciente == null ? "" : paciente.getNome();
+            }
+
+            @Override
+            public Paciente fromString(String string) {
+                return null;
+            }
+        });
+    }
+
+    private void configurarStringConverterProcedimento() {
+        comboProcedimento.setConverter(new StringConverter<Procedimento>() {
+            @Override
+            public String toString(Procedimento procedimento) {
+                return procedimento == null ? "" : procedimento.getNome();
+            }
+
+            @Override
+            public Procedimento fromString(String string) {
+                return null;
+            }
+        });
     }
 
     private void carregarConsultas() {
@@ -88,9 +132,13 @@ public class ConsultaController {
         try {
             Paciente paciente = comboPaciente.getSelectionModel().getSelectedItem();
             if (paciente == null) throw new IllegalArgumentException("Selecione um paciente");
-            LocalDateTime dataHora = LocalDateTime.of(datePicker.getValue(), java.time.LocalTime.parse(txtHora.getText(), DateTimeFormatter.ofPattern("HH:mm")));
+
+            if (datePicker.getValue() == null) throw new IllegalArgumentException("Selecione uma data");
+            String horaStr = txtHora.getText();
+            if (horaStr == null || horaStr.trim().isEmpty()) throw new IllegalArgumentException("Informe a hora no formato HH:mm");
+            LocalDateTime dataHora = LocalDateTime.of(datePicker.getValue(), LocalTime.parse(horaStr, DateTimeFormatter.ofPattern("HH:mm")));
             String observacoes = txtObservacoes.getText();
-            
+
             if (idEditando != null) {
                 Consulta c = consultaService.findById(idEditando).orElse(new Consulta());
                 c.setPacienteId(paciente.getId());
@@ -102,8 +150,11 @@ public class ConsultaController {
                     c.setNomeProcedimento(proc.getNome());
                     c.setValorProcedimento(proc.getValor());
                 } else {
-                    c.setNomeProcedimento(txtNomeProcedimentoManual.getText());
-                    c.setValorProcedimento(Double.parseDouble(txtValorManual.getText()));
+                    String nomeProc = txtNomeProcedimentoManual.getText();
+                    if (nomeProc == null || nomeProc.trim().isEmpty()) throw new IllegalArgumentException("Informe o nome do procedimento");
+                    double valor = Double.parseDouble(txtValorManual.getText());
+                    c.setNomeProcedimento(nomeProc);
+                    c.setValorProcedimento(valor);
                 }
                 consultaService.salvar(c);
                 idEditando = null;
@@ -113,7 +164,10 @@ public class ConsultaController {
                     if (proc == null) throw new IllegalArgumentException("Selecione um procedimento");
                     consultaService.registrarConsultaComProcedimentoExistente(paciente.getId(), dataHora, proc.getId(), observacoes);
                 } else {
-                    consultaService.registrarConsultaComProcedimentoManual(paciente.getId(), dataHora, txtNomeProcedimentoManual.getText(), Double.parseDouble(txtValorManual.getText()), observacoes);
+                    String nomeProc = txtNomeProcedimentoManual.getText();
+                    if (nomeProc == null || nomeProc.trim().isEmpty()) throw new IllegalArgumentException("Informe o nome do procedimento");
+                    double valor = Double.parseDouble(txtValorManual.getText());
+                    consultaService.registrarConsultaComProcedimentoManual(paciente.getId(), dataHora, nomeProc, valor, observacoes);
                 }
             }
             limparFormulario();
@@ -150,7 +204,7 @@ public class ConsultaController {
         txtHora.setText(sel.getDataHora().toLocalTime().toString());
         txtObservacoes.setText(sel.getObservacoes());
         idEditando = sel.getId();
-        
+
         boolean manual = true;
         for (Procedimento proc : procedimentosList) {
             if (proc.getNome().equals(sel.getNomeProcedimento()) && proc.getValor() == sel.getValorProcedimento()) {
