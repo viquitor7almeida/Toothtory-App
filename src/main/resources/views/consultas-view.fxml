@@ -40,9 +40,10 @@
                     <Label text="Observações:"/>
                     <TextArea fx:id="txtObservacoes" prefHeight="60"/>
                     <HBox spacing="10">
-                        <Button text="Salvar Consulta" onAction="#salvarConsulta"/>
+                        <Button text="Salvar" onAction="#salvarConsulta"/>
+                        <Button text="Editar" onAction="#editarConsulta"/>
                         <Button text="Limpar" onAction="#limparFormulario"/>
-                        <Button text="Excluir Selecionada" onAction="#excluirConsulta"/>
+                        <Button text="Excluir" onAction="#excluirConsulta"/>
                     </HBox>
                 </VBox>
             </TitledPane>
