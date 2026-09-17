@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<VBox spacing="10" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.ConsultaController">
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-    <TableView fx:id="tabelaConsultas">
+<VBox styleClass="tela" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.ConsultaController">
+    <Label text="Consultas" styleClass="titulo-pagina"/>
+    <TableView fx:id="tabelaConsultas" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colId" text="ID"/>
             <TableColumn fx:id="colPaciente" text="Paciente"/>
@@ -19,31 +16,31 @@
     <Accordion>
         <panes>
             <TitledPane text="Nova Consulta">
-                <VBox spacing="10">
-                    <Label text="Paciente:"/>
-                    <ComboBox fx:id="comboPaciente" promptText="Selecione o paciente"/>
-                    <Label text="Data e Hora:"/>
+                <VBox spacing="12">
+                    <Label text="Paciente" styleClass="rotulo-campo"/>
+                    <ComboBox fx:id="comboPaciente" promptText="Selecione o paciente" maxWidth="1.7976931348623157E308"/>
+                    <Label text="Data e Hora" styleClass="rotulo-campo"/>
                     <HBox spacing="10">
-                        <DatePicker fx:id="datePicker" promptText="Data"/>
-                        <TextField fx:id="txtHora" promptText="HH:mm"/>
+                        <DatePicker fx:id="datePicker" promptText="Data" HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="txtHora" promptText="HH:mm" maxWidth="90"/>
                     </HBox>
-                    <Label text="Procedimento:"/>
+                    <Label text="Procedimento" styleClass="rotulo-campo"/>
                     <HBox spacing="10">
                         <RadioButton fx:id="rbProcedimentoExistente" text="Existente"/>
                         <RadioButton fx:id="rbProcedimentoManual" text="Manual"/>
                     </HBox>
-                    <ComboBox fx:id="comboProcedimento" promptText="Selecione o procedimento"/>
+                    <ComboBox fx:id="comboProcedimento" promptText="Selecione o procedimento" maxWidth="1.7976931348623157E308"/>
                     <HBox spacing="10">
-                        <TextField fx:id="txtNomeProcedimentoManual" promptText="Nome do procedimento"/>
-                        <TextField fx:id="txtValorManual" promptText="Valor"/>
+                        <TextField fx:id="txtNomeProcedimentoManual" promptText="Nome do procedimento" HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="txtValorManual" promptText="Valor" maxWidth="120"/>
                     </HBox>
-                    <Label text="Observações:"/>
+                    <Label text="Observações" styleClass="rotulo-campo"/>
                     <TextArea fx:id="txtObservacoes" prefHeight="60"/>
                     <HBox spacing="10">
-                        <Button text="Salvar" onAction="#salvarConsulta"/>
+                        <Button text="Salvar" styleClass="button-primario" onAction="#salvarConsulta"/>
                         <Button text="Editar" onAction="#editarConsulta"/>
                         <Button text="Limpar" onAction="#limparFormulario"/>
-                        <Button text="Excluir" onAction="#excluirConsulta"/>
+                        <Button text="Excluir" styleClass="button-perigo" onAction="#excluirConsulta"/>
                     </HBox>
                 </VBox>
             </TitledPane>

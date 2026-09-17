@@ -3,39 +3,55 @@ package com.toothtory.components;
 import com.toothtory.MainApp;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Sidebar extends VBox {
     private final MainApp mainApp;
+    private final Map<String, Button> itens = new LinkedHashMap<>();
 
     public Sidebar(MainApp mainApp) {
         this.mainApp = mainApp;
-        setPrefWidth(200);
-        setPadding(new Insets(20));
-        setSpacing(10);
-        setStyle("-fx-background-color: #2c3e50;");
+        setPrefWidth(210);
+        getStyleClass().add("sidebar");
 
-        Text logo = new Text("🦷");
-        logo.setStyle("-fx-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        VBox cabecalho = new VBox();
+        cabecalho.getStyleClass().add("sidebar-cabecalho");
+        Label logo = new Label("Toothtory");
+        logo.getStyleClass().add("sidebar-logo");
+        Label subtitulo = new Label("Gestão Odontológica");
+        subtitulo.getStyleClass().add("sidebar-subtitulo");
+        cabecalho.getChildren().addAll(logo, subtitulo);
 
-        Button btnHome = criarBotao("Home");
-        Button btnPacientes = criarBotao("Pacientes");
-        Button btnProcedimentos = criarBotao("Procedimentos");
-        Button btnConsultas = criarBotao("Consultas");
+        Region divisor = new Region();
+        divisor.getStyleClass().add("sidebar-divisor");
+        VBox.setMargin(divisor, new Insets(18, 8, 14, 8));
 
-        btnHome.setOnAction(e -> this.mainApp.carregarTela("dashboard"));
-        btnPacientes.setOnAction(e -> this.mainApp.carregarTela("pacientes"));
-        btnProcedimentos.setOnAction(e -> this.mainApp.carregarTela("procedimentos"));
-        btnConsultas.setOnAction(e -> this.mainApp.carregarTela("consultas"));
-
-        getChildren().addAll(logo, btnHome, btnPacientes, btnProcedimentos, btnConsultas);
+        getChildren().addAll(cabecalho, divisor);
+        adicionarItem("dashboard", "Home");
+        adicionarItem("pacientes", "Pacientes");
+        adicionarItem("procedimentos", "Procedimentos");
+        adicionarItem("consultas", "Consultas");
+        adicionarItem("financeiro", "Financeiro");
     }
 
-    private Button criarBotao(String texto) {
-        Button btn = new Button(texto);
-        btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10; -fx-cursor: hand;");
-        btn.setMaxWidth(Double.MAX_VALUE);
-        return btn;
+    private void adicionarItem(String tela, String rotulo) {
+        Button item = new Button(rotulo);
+        item.getStyleClass().add("sidebar-item");
+        item.setOnAction(e -> mainApp.carregarTela(tela));
+        itens.put(tela, item);
+        getChildren().add(item);
+    }
+
+    public void selecionar(String tela) {
+        itens.values().forEach(item -> item.getStyleClass().remove("ativo"));
+        Button item = itens.get(tela);
+        if (item != null) {
+            item.getStyleClass().add("ativo");
+        }
     }
 }

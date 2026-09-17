@@ -1,0 +1,723 @@
+.root, .dialog-pane {
+    -gelo: #F3F7F8;
+    -branco: #FFFFFF;
+    -dourado: #C9A227;
+    -dourado-claro: #D9B64F;
+    -dourado-escuro: #AE8A1E;
+    -dourado-suave: #F4EBCE;
+    -dourado-texto: #8C6E14;
+    -rosa: #F6CBD6;
+    -rosa-suave: #F9E2E9;
+    -rosa-medio: #D98FA5;
+    -rosa-profundo: #C9899A;
+    -texto: #3E3B3C;
+    -texto-suave: #928D8F;
+    -verde: #7CA982;
+    -vermelho: #C47B7B;
+    -borda: #E7E1E2;
+    -borda-suave: #F0EBEC;
+    -sombra-cardo: dropshadow(gaussian, rgba(62, 59, 60, 0.07), 12, 0, 0, 3);
+}
+
+.root {
+    -fx-font-family: "Inter";
+    -fx-font-size: 13px;
+    -fx-text-fill: -texto;
+    -fx-background-color: -gelo;
+}
+
+.app-root {
+    -fx-background-color: -gelo;
+}
+
+.tela {
+    -fx-background-color: -gelo;
+    -fx-padding: 24;
+    -fx-spacing: 16;
+}
+
+.titulo-pagina {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 24px;
+    -fx-text-fill: -texto;
+}
+
+.titulo-secao {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: -texto;
+}
+
+.rotulo-campo {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: -texto-suave;
+}
+
+.tabela-vazia {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: -texto-suave;
+    -fx-padding: 24;
+}
+
+.card-metrica {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-width: 1;
+    -fx-effect: -sombra-cardo;
+    -fx-padding: 18 20;
+    -fx-spacing: 6;
+}
+
+.card-rotulo {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 10.5px;
+    -fx-text-fill: -texto-suave;
+}
+
+.card-valor, .card-valor-dourado, .card-valor-rosa, .card-valor-verde, .card-valor-vermelho {
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 24px;
+    -fx-text-fill: -texto;
+}
+
+.card-valor-dourado { -fx-text-fill: -dourado; }
+.card-valor-rosa { -fx-text-fill: -rosa-profundo; }
+.card-valor-verde { -fx-text-fill: -verde; }
+.card-valor-vermelho { -fx-text-fill: -vermelho; }
+
+.sidebar {
+    -fx-background-color: -branco;
+    -fx-border-color: transparent -borda transparent transparent;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 26 14;
+    -fx-spacing: 4;
+}
+
+.sidebar-cabecalho {
+    -fx-padding: 0 10;
+    -fx-spacing: 2;
+}
+
+.sidebar-logo {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 20px;
+    -fx-text-fill: -dourado;
+}
+
+.sidebar-subtitulo {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 10px;
+    -fx-text-fill: -texto-suave;
+}
+
+.sidebar-divisor {
+    -fx-background-color: -borda;
+    -fx-max-width: Infinity;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+}
+
+.button.sidebar-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 13px;
+    -fx-text-fill: -texto;
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 9 14;
+    -fx-max-width: Infinity;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.button.sidebar-item:hover {
+    -fx-background-color: -dourado-suave;
+    -fx-text-fill: -dourado-texto;
+}
+
+.button.sidebar-item:pressed {
+    -fx-background-color: -dourado-escuro;
+    -fx-text-fill: white;
+}
+
+.button.sidebar-item.ativo {
+    -fx-background-color: -dourado-suave;
+    -fx-text-fill: -dourado-texto;
+}
+
+.button.sidebar-item.ativo:hover {
+    -fx-background-color: #EFE3BE;
+}
+
+.button.sidebar-item.ativo:pressed {
+    -fx-background-color: -dourado-escuro;
+    -fx-text-fill: white;
+}
+
+.topbar {
+    -fx-background-color: -branco;
+    -fx-border-color: transparent transparent -borda transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 24;
+    -fx-spacing: 12;
+}
+
+.wordmark {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 18px;
+    -fx-text-fill: -dourado;
+}
+
+.chip-usuario {
+    -fx-background-color: -gelo;
+    -fx-background-radius: 999px;
+    -fx-border-color: -borda;
+    -fx-border-radius: 999px;
+    -fx-border-width: 1;
+    -fx-padding: 4 14 4 4;
+    -fx-spacing: 8;
+    -fx-alignment: CENTER;
+}
+
+.avatar {
+    -fx-background-color: -rosa-profundo;
+    -fx-background-radius: 999px;
+    -fx-min-width: 26;
+    -fx-min-height: 26;
+    -fx-max-width: 26;
+    -fx-max-height: 26;
+    -fx-alignment: CENTER;
+}
+
+.avatar-inicial {
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 11px;
+    -fx-text-fill: white;
+}
+
+.chip-nome {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: -texto;
+}
+
+.button {
+    -fx-background-color: -branco;
+    -fx-background-radius: 8;
+    -fx-border-color: -borda;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-text-fill: -texto;
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12.5px;
+    -fx-padding: 7 16;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: -rosa-suave;
+    -fx-border-color: -rosa-profundo;
+}
+
+.button:pressed {
+    -fx-background-color: -rosa;
+}
+
+.button-primario {
+    -fx-background-color: linear-gradient(to bottom, -dourado-claro, -dourado);
+    -fx-border-width: 0;
+    -fx-text-fill: white;
+    -fx-font-family: "Inter SemiBold";
+}
+
+.button-primario:hover {
+    -fx-background-color: linear-gradient(to bottom, -dourado-claro, -dourado-escuro);
+    -fx-border-width: 0;
+}
+
+.button-primario:pressed {
+    -fx-background-color: -dourado-escuro;
+    -fx-border-width: 0;
+}
+
+.button-perigo {
+    -fx-text-fill: -vermelho;
+}
+
+.button-perigo:hover {
+    -fx-background-color: #FAEDED;
+    -fx-border-color: -vermelho;
+}
+
+.button-perigo:pressed {
+    -fx-background-color: #F3DEDE;
+}
+
+.text-input {
+    -fx-background-color: -branco;
+    -fx-background-radius: 8;
+    -fx-border-color: -borda;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-text-fill: -texto;
+    -fx-font-family: "Inter";
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #BCB6B8;
+    -fx-highlight-fill: -dourado-suave;
+    -fx-highlight-text-fill: -texto;
+    -fx-padding: 6 10;
+}
+
+.text-input:focused {
+    -fx-border-color: -dourado;
+    -fx-effect: dropshadow(gaussian, rgba(201, 162, 39, 0.25), 6, 0, 0, 0);
+}
+
+.text-area .content {
+    -fx-background-color: -branco;
+}
+
+.combo-box {
+    -fx-background-color: -branco;
+    -fx-background-radius: 8;
+    -fx-border-color: -borda;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.combo-box:hover {
+    -fx-border-color: -rosa-profundo;
+}
+
+.combo-box:focused {
+    -fx-border-color: -dourado;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -texto;
+    -fx-font-family: "Inter";
+    -fx-font-size: 13px;
+    -fx-background-color: transparent;
+    -fx-padding: 6 10 6 12;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 8 0 0;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -rosa-profundo;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: -branco;
+    -fx-background-radius: 10;
+    -fx-border-color: -borda;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(62, 59, 60, 0.12), 14, 0, 0, 4);
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: -texto;
+    -fx-font-family: "Inter";
+    -fx-font-size: 12.5px;
+    -fx-padding: 7 12;
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: -rosa-suave;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: -dourado-suave;
+    -fx-text-fill: -dourado-texto;
+}
+
+.date-picker {
+    -fx-background-color: -branco;
+    -fx-background-radius: 8;
+    -fx-border-color: -borda;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.date-picker .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 8 0 0 8;
+    -fx-padding: 6 10;
+    -fx-prompt-text-fill: #BCB6B8;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 6 8;
+    -fx-cursor: hand;
+}
+
+.date-picker .arrow {
+    -fx-background-color: -rosa-profundo;
+}
+
+.date-picker-popup {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(62, 59, 60, 0.14), 16, 0, 0, 5);
+}
+
+.date-picker-popup .month-year-label {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: -texto;
+}
+
+.date-picker-popup .cell {
+    -fx-background-color: -branco;
+    -fx-border-color: transparent;
+    -fx-font-family: "Inter";
+    -fx-font-size: 12px;
+    -fx-text-fill: -texto;
+}
+
+.date-picker-popup .cell:hover {
+    -fx-background-color: -rosa-suave;
+}
+
+.date-picker-popup .cell:selected {
+    -fx-background-color: -dourado;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup .cell:focused,
+.date-picker-popup .cell:today {
+    -fx-border-color: -rosa-profundo;
+}
+
+.table-view {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: -sombra-cardo;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #FBF9F7;
+    -fx-background-radius: 11 11 0 0;
+    -fx-border-color: transparent transparent -borda-suave transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: null;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-size: 42;
+}
+
+.table-view .column-header .label {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 11px;
+    -fx-text-fill: -texto-suave;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -borda-suave transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #FBF8F9;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: -rosa-suave;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: -dourado-suave;
+    -fx-border-color: transparent transparent -dourado transparent;
+}
+
+.table-view .table-cell {
+    -fx-font-family: "Inter";
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -texto;
+}
+
+.table-view .table-cell:focused {
+    -fx-border-color: transparent;
+}
+
+.titled-pane {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: -sombra-cardo;
+}
+
+.titled-pane > .title {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 11;
+    -fx-padding: 12 16;
+}
+
+.titled-pane > .title .label {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: -texto;
+}
+
+.titled-pane > .title > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0 8 0 0;
+}
+
+.titled-pane > .title > .arrow-button > .arrow {
+    -fx-background-color: -dourado;
+}
+
+.titled-pane > .content {
+    -fx-background-color: -branco;
+    -fx-background-radius: 0 0 11 11;
+    -fx-border-color: -borda-suave transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 14 16 16 16;
+}
+
+.grafico {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: -sombra-cardo;
+    -fx-padding: 18 22 14 22;
+}
+
+.chart-title {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: -texto;
+}
+
+.chart-legend .chart-legend-item {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 11px;
+    -fx-text-fill: -texto;
+}
+
+.chart-legend .chart-legend-item-symbol {
+    -fx-background-radius: 3;
+}
+
+.axis {
+    -fx-tick-label-font: 11px "Inter";
+    -fx-tick-label-fill: -texto-suave;
+}
+
+.axis .axis-label {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 11px;
+    -fx-text-fill: -texto-suave;
+}
+
+.axis .axis-tick-mark, .axis .minor-tick-mark {
+    -fx-stroke: -borda;
+}
+
+.default-color0.chart-bar { -fx-bar-fill: -dourado; }
+.default-color1.chart-bar { -fx-bar-fill: -rosa-medio; }
+.default-color2.chart-bar { -fx-bar-fill: -verde; }
+
+.radio-button {
+    -fx-text-fill: -texto;
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12.5px;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.radio-button .radio {
+    -fx-background-color: -branco;
+    -fx-background-radius: 999px;
+    -fx-border-color: -borda;
+    -fx-border-radius: 999px;
+    -fx-border-width: 1;
+}
+
+.radio-button:hover .radio {
+    -fx-border-color: -rosa-profundo;
+}
+
+.radio-button:selected .radio {
+    -fx-border-color: -dourado;
+}
+
+.radio-button .radio .dot {
+    -fx-background-color: -dourado;
+    -fx-background-radius: 999px;
+    -fx-background-insets: 3;
+}
+
+.total-gasto {
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: -texto;
+    -fx-background-color: -rosa-suave;
+    -fx-background-radius: 999px;
+    -fx-padding: 7 16;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #DDD7D8;
+    -fx-background-radius: 6;
+    -fx-background-insets: 2;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: -rosa-profundo;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+}
+
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+}
+
+.tooltip {
+    -fx-background-color: -branco;
+    -fx-background-radius: 8;
+    -fx-border-color: -borda;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 11.5px;
+    -fx-text-fill: -texto;
+    -fx-padding: 6 10;
+    -fx-effect: dropshadow(gaussian, rgba(62, 59, 60, 0.14), 10, 0, 0, 3);
+}
+
+.dialog-pane {
+    -fx-background-color: -branco;
+    -fx-background-radius: 14;
+    -fx-border-color: -borda;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(62, 59, 60, 0.16), 20, 0, 0, 6);
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: transparent;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: -texto;
+}
+
+.dialog-pane .content .label {
+    -fx-font-family: "Inter";
+    -fx-font-size: 13px;
+    -fx-text-fill: -texto;
+}
+
+.notificacao-container {
+    -fx-spacing: 8;
+}
+
+.notificacao {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(62, 59, 60, 0.14), 16, 0, 0, 5);
+    -fx-padding: 12 16;
+    -fx-spacing: 10;
+    -fx-alignment: CENTER-LEFT;
+}
+
+.notificacao-sucesso {
+    -fx-border-color: -verde;
+    -fx-background-color: #F4F9F5;
+}
+
+.notificacao-erro {
+    -fx-border-color: -vermelho;
+    -fx-background-color: #FAEFEF;
+}
+
+.notificacao-aviso {
+    -fx-border-color: -dourado;
+    -fx-background-color: -dourado-suave;
+}
+
+.notificacao-indicador {
+    -fx-min-width: 10;
+    -fx-min-height: 10;
+    -fx-max-width: 10;
+    -fx-max-height: 10;
+    -fx-background-radius: 999px;
+}
+
+.notificacao-sucesso .notificacao-indicador {
+    -fx-background-color: -verde;
+}
+
+.notificacao-erro .notificacao-indicador {
+    -fx-background-color: -vermelho;
+}
+
+.notificacao-aviso .notificacao-indicador {
+    -fx-background-color: -dourado;
+}
+
+.notificacao-texto {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -texto;
+}

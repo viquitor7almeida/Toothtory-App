@@ -38,11 +38,21 @@ public class DatabaseInitializer {
                 FOREIGN KEY (pacienteId) REFERENCES pacientes(id) ON DELETE CASCADE
             )
         """;
+        String createGastos = """
+            CREATE TABLE IF NOT EXISTS gastos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                valor REAL NOT NULL,
+                data TEXT NOT NULL,
+                dataCriacao TEXT NOT NULL
+            )
+        """;
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(createPacientes);
             stmt.execute(createProcedimentos);
             stmt.execute(createConsultas);
+            stmt.execute(createGastos);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -52,8 +52,12 @@ public class ConsultaService {
     }
 
     public double totalFaturadoNoMes() {
-        LocalDateTime inicio = YearMonth.now().atDay(1).atStartOfDay();
-        LocalDateTime fim = YearMonth.now().atEndOfMonth().atTime(23, 59, 59);
+        return totalFaturadoPorMes(YearMonth.now());
+    }
+
+    public double totalFaturadoPorMes(YearMonth mes) {
+        LocalDateTime inicio = mes.atDay(1).atStartOfDay();
+        LocalDateTime fim = mes.atEndOfMonth().atTime(23, 59, 59);
         return repository.somaValorPorPeriodo(inicio, fim);
     }
 
