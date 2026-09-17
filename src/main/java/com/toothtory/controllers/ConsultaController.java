@@ -1,5 +1,7 @@
 package com.toothtory.controllers;
 
+import com.toothtory.components.Alerta;
+import com.toothtory.components.Notificacao;
 import com.toothtory.services.ConsultaService;
 import com.toothtory.services.PacienteService;
 import com.toothtory.services.ProcedimentoService;
@@ -49,6 +51,7 @@ public class ConsultaController {
     public void initialize() {
         configurarColunas();
         carregarComboBoxes();
+        tabelaConsultas.setPlaceholder(rotuloVazio("Nenhuma consulta registrada"));
         carregarConsultas();
         configurarToggleGroup();
         configurarStringConverterPaciente();
@@ -172,9 +175,9 @@ public class ConsultaController {
             }
             limparFormulario();
             carregarConsultas();
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Consulta registrada.");
+            Notificacao.sucesso("Consulta registrada.");
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", e.getMessage());
+            Notificacao.erro(e.getMessage());
         }
     }
 
@@ -195,7 +198,7 @@ public class ConsultaController {
     private void editarConsulta() {
         Consulta sel = tabelaConsultas.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Selecione uma consulta.");
+            Notificacao.aviso("Selecione uma consulta.");
             return;
         }
         Paciente p = pacienteService.findById(sel.getPacienteId()).orElse(null);
@@ -226,20 +229,19 @@ public class ConsultaController {
     private void excluirConsulta() {
         Consulta sel = tabelaConsultas.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Selecione uma consulta.");
+            Notificacao.aviso("Selecione uma consulta.");
             return;
         }
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Excluir consulta?", ButtonType.YES, ButtonType.NO);
-        if (confirm.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
+        if (Alerta.confirmar("Confirmar exclusão", "Excluir consulta?")) {
             consultaService.excluir(sel.getId());
             carregarConsultas();
             limparFormulario();
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type, message, ButtonType.OK);
-        alert.setTitle(title);
-        alert.showAndWait();
+    private Label rotuloVazio(String texto) {
+        Label rotulo = new Label(texto);
+        rotulo.getStyleClass().add("tabela-vazia");
+        return rotulo;
     }
 }

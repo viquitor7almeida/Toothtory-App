@@ -1,5 +1,7 @@
 package com.toothtory.controllers;
 
+import com.toothtory.components.Alerta;
+import com.toothtory.components.Notificacao;
 import com.toothtory.services.PacienteService;
 import com.toothtory.domain.entities.Paciente;
 import javafx.collections.FXCollections;
@@ -27,6 +29,7 @@ public class PacienteController {
     @FXML
     public void initialize() {
         configurarColunas();
+        tabelaPacientes.setPlaceholder(rotuloVazio("Nenhum paciente cadastrado"));
         carregarPacientes();
         txtBusca.textProperty().addListener((obs, old, novo) -> buscarPacientes());
     }
@@ -79,9 +82,9 @@ public class PacienteController {
             service.salvar(p);
             limparFormulario();
             carregarPacientes();
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Paciente salvo com sucesso.");
+            Notificacao.sucesso("Paciente salvo com sucesso.");
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", e.getMessage());
+            Notificacao.erro(e.getMessage());
         }
     }
 
@@ -89,7 +92,7 @@ public class PacienteController {
     private void editarPaciente() {
         Paciente selecionado = tabelaPacientes.getSelectionModel().getSelectedItem();
         if (selecionado == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Selecione um paciente para editar.");
+            Notificacao.aviso("Selecione um paciente para editar.");
             return;
         }
         txtNome.setText(selecionado.getNome());
@@ -103,21 +106,20 @@ public class PacienteController {
     private void excluirPaciente() {
         Paciente selecionado = tabelaPacientes.getSelectionModel().getSelectedItem();
         if (selecionado == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Selecione um paciente para excluir.");
+            Notificacao.aviso("Selecione um paciente para excluir.");
             return;
         }
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Deseja realmente excluir " + selecionado.getNome() + "?", ButtonType.YES, ButtonType.NO);
-        if (confirm.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
+        if (Alerta.confirmar("Confirmar exclusão", "Deseja realmente excluir " + selecionado.getNome() + "?")) {
             service.excluir(selecionado.getId());
             carregarPacientes();
             limparFormulario();
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Paciente excluído.");
+            Notificacao.sucesso("Paciente excluído.");
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type, message, ButtonType.OK);
-        alert.setTitle(title);
-        alert.showAndWait();
+    private Label rotuloVazio(String texto) {
+        Label rotulo = new Label(texto);
+        rotulo.getStyleClass().add("tabela-vazia");
+        return rotulo;
     }
 }

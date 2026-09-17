@@ -44,6 +44,15 @@ Sistema desktop para gestão de consultórios odontológicos desenvolvido em Jav
 * Registro manual de procedimento
 * Histórico de atendimentos
 
+### Financeiro
+
+* Lucro de cada mês do ano selecionado (tabela e gráfico de barras)
+* Receita calculada a partir dos valores das consultas do mês
+* Declaração de gastos com nome, valor e data
+* Edição e exclusão de gastos
+* Lista de gastos filtrada por mês com total do mês
+* Card de lucro do mês no Dashboard
+
 ### Persistência
 
 * Banco de dados local SQLite
@@ -66,7 +75,9 @@ src/main/java/com/toothtory/
 │   ├── entities/
 │   │   ├── Paciente
 │   │   ├── Procedimento
-│   │   └── Consulta
+│   │   ├── Consulta
+│   │   ├── Gasto
+│   │   └── ResumoMensal
 │   └── repositories/
 ├── infra/
 │   ├── database/
@@ -136,6 +147,7 @@ A Sidebar contém os seguintes módulos:
 * Pacientes
 * Procedimentos
 * Consultas
+* Financeiro
 
 Ao selecionar uma opção, a tela correspondente é carregada na área central da aplicação sem reinicializar a janela principal.
 
@@ -169,6 +181,16 @@ Ao registrar uma consulta:
 * O valor do procedimento é copiado para a consulta
 
 Dessa forma, alterações futuras no cadastro de procedimentos não impactam o histórico financeiro e clínico já registrado.
+
+### Gasto
+
+* Nome é obrigatório
+* Valor deve ser maior que zero
+* Data é obrigatória
+
+### Lucro
+
+* Lucro do mês = soma dos valores das consultas do mês subtraída da soma dos gastos declarados no mês
 
 ---
 

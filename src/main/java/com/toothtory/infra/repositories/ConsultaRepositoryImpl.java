@@ -15,7 +15,7 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
     public void save(Consulta consulta) {
         String sql = "INSERT INTO consultas (pacienteId, dataHora, nomeProcedimento, valorProcedimento, observacoes, dataCriacao) VALUES (?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, consulta.getPacienteId());
             stmt.setString(2, consulta.getDataHora().toString());
             stmt.setString(3, consulta.getNomeProcedimento());
@@ -23,9 +23,11 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
             stmt.setString(5, consulta.getObservacoes());
             stmt.setString(6, consulta.getDataCriacao().toString());
             stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                consulta.setId(rs.getLong(1));
+            try (Statement keysStmt = conn.createStatement();
+                 ResultSet rs = keysStmt.executeQuery("SELECT last_insert_rowid()")) {
+                if (rs.next()) {
+                    consulta.setId(rs.getLong(1));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

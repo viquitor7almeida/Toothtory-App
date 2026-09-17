@@ -1,5 +1,7 @@
 package com.toothtory.controllers;
 
+import com.toothtory.components.Alerta;
+import com.toothtory.components.Notificacao;
 import com.toothtory.services.ProcedimentoService;
 import com.toothtory.domain.entities.Procedimento;
 import javafx.collections.FXCollections;
@@ -27,6 +29,7 @@ public class ProcedimentoController {
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         tabelaProcedimentos.setItems(lista);
+        tabelaProcedimentos.setPlaceholder(rotuloVazio("Nenhum procedimento cadastrado"));
         carregarProcedimentos();
         txtBusca.textProperty().addListener((obs, old, novo) -> buscar());
     }
@@ -67,9 +70,9 @@ public class ProcedimentoController {
             service.salvar(p);
             limpar();
             carregarProcedimentos();
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Procedimento salvo.");
+            Notificacao.sucesso("Procedimento salvo.");
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", e.getMessage());
+            Notificacao.erro(e.getMessage());
         }
     }
 
@@ -77,7 +80,7 @@ public class ProcedimentoController {
     private void editar() {
         Procedimento sel = tabelaProcedimentos.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Selecione um procedimento.");
+            Notificacao.aviso("Selecione um procedimento.");
             return;
         }
         txtNome.setText(sel.getNome());
@@ -89,20 +92,19 @@ public class ProcedimentoController {
     private void excluir() {
         Procedimento sel = tabelaProcedimentos.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Selecione um procedimento.");
+            Notificacao.aviso("Selecione um procedimento.");
             return;
         }
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Excluir " + sel.getNome() + "?", ButtonType.YES, ButtonType.NO);
-        if (confirm.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
+        if (Alerta.confirmar("Confirmar exclusão", "Excluir " + sel.getNome() + "?")) {
             service.excluir(sel.getId());
             carregarProcedimentos();
             limpar();
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type, message, ButtonType.OK);
-        alert.setTitle(title);
-        alert.showAndWait();
+    private Label rotuloVazio(String texto) {
+        Label rotulo = new Label(texto);
+        rotulo.getStyleClass().add("tabela-vazia");
+        return rotulo;
     }
 }

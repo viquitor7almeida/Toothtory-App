@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<VBox styleClass="tela" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.FinanceiroController">
+    <Label text="Financeiro" styleClass="titulo-pagina"/>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Ano" styleClass="rotulo-campo"/>
+        <ComboBox fx:id="comboAno"/>
+    </HBox>
+    <TableView fx:id="tabelaResumo" prefHeight="220">
+        <columns>
+            <TableColumn fx:id="colMes" text="Mês"/>
+            <TableColumn fx:id="colReceita" text="Receita"/>
+            <TableColumn fx:id="colGastos" text="Gastos"/>
+            <TableColumn fx:id="colLucro" text="Lucro"/>
+        </columns>
+    </TableView>
+    <BarChart fx:id="graficoMensal" styleClass="grafico" prefHeight="300" title="Receita, Gastos e Lucro por Mês">
+        <xAxis>
+            <CategoryAxis label="Mês"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Valor (R$)"/>
+        </yAxis>
+    </BarChart>
+    <Accordion>
+        <panes>
+            <TitledPane text="Declarar Gasto">
+                <VBox spacing="12">
+                    <Label text="Nome do Gasto" styleClass="rotulo-campo"/>
+                    <TextField fx:id="txtNomeGasto" promptText="Nome do gasto"/>
+                    <Label text="Valor e Data" styleClass="rotulo-campo"/>
+                    <HBox spacing="10">
+                        <TextField fx:id="txtValorGasto" promptText="0.00" maxWidth="140"/>
+                        <DatePicker fx:id="datePickerGasto" promptText="Data" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    <HBox spacing="10">
+                        <Button text="Salvar" styleClass="button-primario" onAction="#salvarGasto"/>
+                        <Button text="Editar" onAction="#editarGasto"/>
+                        <Button text="Limpar" onAction="#limparFormularioGasto"/>
+                        <Button text="Excluir" styleClass="button-perigo" onAction="#excluirGasto"/>
+                    </HBox>
+                </VBox>
+            </TitledPane>
+        </panes>
+    </Accordion>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Mês" styleClass="rotulo-campo"/>
+        <ComboBox fx:id="comboMes"/>
+        <Label fx:id="totalGastosLabel" styleClass="total-gasto"/>
+    </HBox>
+    <TableView fx:id="tabelaGastos" prefHeight="200">
+        <columns>
+            <TableColumn fx:id="colGastoId" text="ID"/>
+            <TableColumn fx:id="colGastoNome" text="Nome"/>
+            <TableColumn fx:id="colGastoValor" text="Valor"/>
+            <TableColumn fx:id="colGastoData" text="Data"/>
+        </columns>
+    </TableView>
+</VBox>

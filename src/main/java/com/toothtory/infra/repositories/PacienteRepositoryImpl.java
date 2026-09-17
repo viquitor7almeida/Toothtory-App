@@ -15,7 +15,7 @@ public class PacienteRepositoryImpl implements PacienteRepository {
     public void save(Paciente paciente) {
         String sql = "INSERT INTO pacientes (nome, endereco, email, celular, dataCriacao, dataAtualizacao) VALUES (?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, paciente.getNome());
             stmt.setString(2, paciente.getEndereco());
             stmt.setString(3, paciente.getEmail());
@@ -23,9 +23,11 @@ public class PacienteRepositoryImpl implements PacienteRepository {
             stmt.setString(5, paciente.getDataCriacao().toString());
             stmt.setString(6, paciente.getDataAtualizacao().toString());
             stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                paciente.setId(rs.getLong(1));
+            try (Statement keysStmt = conn.createStatement();
+                 ResultSet rs = keysStmt.executeQuery("SELECT last_insert_rowid()")) {
+                if (rs.next()) {
+                    paciente.setId(rs.getLong(1));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

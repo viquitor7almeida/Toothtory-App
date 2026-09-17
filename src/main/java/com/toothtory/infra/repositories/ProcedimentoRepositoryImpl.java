@@ -15,15 +15,17 @@ public class ProcedimentoRepositoryImpl implements ProcedimentoRepository {
     public void save(Procedimento procedimento) {
         String sql = "INSERT INTO procedimentos (nome, valor, dataCriacao, dataAtualizacao) VALUES (?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, procedimento.getNome());
             stmt.setDouble(2, procedimento.getValor());
             stmt.setString(3, procedimento.getDataCriacao().toString());
             stmt.setString(4, procedimento.getDataAtualizacao().toString());
             stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                procedimento.setId(rs.getLong(1));
+            try (Statement keysStmt = conn.createStatement();
+                 ResultSet rs = keysStmt.executeQuery("SELECT last_insert_rowid()")) {
+                if (rs.next()) {
+                    procedimento.setId(rs.getLong(1));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
