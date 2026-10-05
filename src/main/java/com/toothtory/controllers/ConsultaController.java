@@ -9,6 +9,7 @@ import com.toothtory.domain.entities.Consulta;
 import com.toothtory.domain.entities.Paciente;
 import com.toothtory.domain.entities.Procedimento;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -49,6 +50,7 @@ public class ConsultaController {
     @FXML private StackPane areaCalendario;
     @FXML private GridPane gradeDias;
     @FXML private TitledPane painelNovaConsulta;
+    @FXML private ScrollPane scrollTela;
     @FXML private ComboBox<Paciente> comboPaciente;
     @FXML private ComboBox<Procedimento> comboProcedimento;
     @FXML private DatePicker datePicker;
@@ -249,6 +251,7 @@ public class ConsultaController {
         limparFormulario();
         datePicker.setValue(data);
         painelNovaConsulta.setExpanded(true);
+        rolarAteFormulario();
         comboPaciente.requestFocus();
     }
 
@@ -363,6 +366,11 @@ public class ConsultaController {
         }
 
         painelNovaConsulta.setExpanded(true);
+        rolarAteFormulario();
+    }
+
+    private void rolarAteFormulario() {
+        Platform.runLater(() -> scrollTela.setVvalue(1.0));
     }
 
     @FXML

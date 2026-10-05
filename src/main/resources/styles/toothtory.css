@@ -679,6 +679,18 @@
     -fx-text-fill: -texto-suave;
 }
 
+.scroll-tela {
+    -fx-background-color: -gelo;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.scroll-tela > .viewport {
+    -fx-background-color: -gelo;
+}
+
 .chart-hover-info {
     -fx-background-color: -branco;
     -fx-background-radius: 999px;
