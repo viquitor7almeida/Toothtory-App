@@ -9,8 +9,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 
 public class PacienteController {
+    @FXML private ScrollPane scrollTela;
+    @FXML private VBox telaPacientes;
     @FXML private TableView<Paciente> tabelaPacientes;
     @FXML private TableColumn<Paciente, String> colNome;
     @FXML private TableColumn<Paciente, String> colEmail;
@@ -27,10 +30,19 @@ public class PacienteController {
 
     @FXML
     public void initialize() {
+        configurarScrollTela();
         configurarColunas();
         tabelaPacientes.setPlaceholder(rotuloVazio("Nenhum paciente cadastrado"));
         carregarPacientes();
         txtBusca.textProperty().addListener((obs, old, novo) -> buscarPacientes());
+    }
+
+    private void configurarScrollTela() {
+        scrollTela.viewportBoundsProperty().addListener((obs, antigo, limites) -> {
+            if (limites != null) {
+                telaPacientes.setMinHeight(limites.getHeight());
+            }
+        });
     }
 
     private void configurarColunas() {

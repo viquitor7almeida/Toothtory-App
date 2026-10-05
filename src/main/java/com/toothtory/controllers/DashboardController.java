@@ -6,6 +6,7 @@ import com.toothtory.services.FinanceiroService;
 import com.toothtory.services.PacienteService;
 import com.toothtory.services.ProcedimentoService;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
@@ -29,6 +30,7 @@ public class DashboardController {
         atualizarIndicadores();
         Calendario calendario = new Calendario();
         calendario.setMaxWidth(840);
+        slotCalendario.setPadding(new Insets(24, 0, 0, 0));
         slotCalendario.getChildren().add(calendario);
     }
 

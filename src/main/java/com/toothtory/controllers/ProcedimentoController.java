@@ -10,11 +10,14 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 
 import java.text.NumberFormat;
 import java.util.Locale;
 
 public class ProcedimentoController {
+    @FXML private ScrollPane scrollTela;
+    @FXML private VBox telaProcedimentos;
     @FXML private TableView<Procedimento> tabelaProcedimentos;
     @FXML private TableColumn<Procedimento, String> colNome;
     @FXML private TableColumn<Procedimento, Double> colValor;
@@ -31,6 +34,7 @@ public class ProcedimentoController {
 
     @FXML
     public void initialize() {
+        configurarScrollTela();
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
 
@@ -44,6 +48,14 @@ public class ProcedimentoController {
         tabelaProcedimentos.setPlaceholder(rotuloVazio("Nenhum procedimento cadastrado"));
         carregarProcedimentos();
         txtBusca.textProperty().addListener((obs, old, novo) -> buscar());
+    }
+
+    private void configurarScrollTela() {
+        scrollTela.viewportBoundsProperty().addListener((obs, antigo, limites) -> {
+            if (limites != null) {
+                telaProcedimentos.setMinHeight(limites.getHeight());
+            }
+        });
     }
 
     private void carregarProcedimentos() {

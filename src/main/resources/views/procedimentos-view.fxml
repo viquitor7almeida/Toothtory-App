@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox styleClass="tela" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.ProcedimentoController">
-    <Label text="Procedimentos" styleClass="titulo-pagina"/>
-    <HBox spacing="10">
-        <TextField fx:id="txtBusca" promptText="Buscar..." HBox.hgrow="ALWAYS"/>
-        <Button text="Buscar" styleClass="button-primario" onAction="#buscar"/>
-    </HBox>
-    <TableView fx:id="tabelaProcedimentos" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colNome" text="NOME"/>
-            <TableColumn fx:id="colValor" text="VALOR" prefWidth="160"/>
-        </columns>
-    </TableView>
-    <Label text="Cadastro / Edição" styleClass="titulo-secao"/>
-    <GridPane hgap="10" vgap="12">
-        <Label text="Nome" styleClass="rotulo-campo" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtNome" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-        <Label text="Valor" styleClass="rotulo-campo" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtValor" promptText="0.00" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-    </GridPane>
-    <HBox spacing="10">
-        <Button text="Salvar" styleClass="button-primario" onAction="#salvar"/>
-        <Button text="Editar" onAction="#editar"/>
-        <Button text="Limpar" onAction="#limpar"/>
-        <Button text="Excluir" styleClass="button-perigo" onAction="#excluir"/>
-    </HBox>
-</VBox>
+<ScrollPane fx:id="scrollTela" styleClass="scroll-tela" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.ProcedimentoController">
+    <content>
+        <VBox fx:id="telaProcedimentos" styleClass="tela">
+            <Label text="Procedimentos" styleClass="titulo-pagina"/>
+            <HBox spacing="10">
+                <TextField fx:id="txtBusca" promptText="Buscar..." HBox.hgrow="ALWAYS"/>
+                <Button text="Buscar" styleClass="button-primario" onAction="#buscar"/>
+            </HBox>
+            <TableView fx:id="tabelaProcedimentos" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colNome" text="NOME"/>
+                    <TableColumn fx:id="colValor" text="VALOR" prefWidth="160"/>
+                </columns>
+            </TableView>
+            <Label text="Cadastro / Edição" styleClass="titulo-secao"/>
+            <GridPane hgap="10" vgap="12">
+                <Label text="Nome" styleClass="rotulo-campo" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNome" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label text="Valor" styleClass="rotulo-campo" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtValor" promptText="0.00" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            </GridPane>
+            <HBox spacing="10">
+                <Button text="Salvar" styleClass="button-primario" onAction="#salvar"/>
+                <Button text="Editar" onAction="#editar"/>
+                <Button text="Limpar" onAction="#limpar"/>
+                <Button text="Excluir" styleClass="button-perigo" onAction="#excluir"/>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

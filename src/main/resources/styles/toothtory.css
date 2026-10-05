@@ -679,6 +679,25 @@
     -fx-text-fill: -texto-suave;
 }
 
+.botao-fechar-overlay {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-border-color: transparent;
+    -fx-border-radius: 6;
+    -fx-padding: 2 7;
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: -texto-suave;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.botao-fechar-overlay:hover {
+    -fx-background-color: -rosa-suave;
+    -fx-text-fill: -texto;
+}
+
 .scroll-tela {
     -fx-background-color: -gelo;
     -fx-border-color: transparent;

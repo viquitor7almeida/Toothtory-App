@@ -178,6 +178,7 @@ public class Calendario extends VBox {
     private VBox criarCelula(LocalDate data) {
         VBox celula = new VBox();
         celula.getStyleClass().add("calendario-dia");
+        celula.setAlignment(Pos.TOP_CENTER);
 
         Label numero = new Label(String.valueOf(data.getDayOfMonth()));
         numero.getStyleClass().add("calendario-dia-numero");
@@ -238,7 +239,16 @@ public class Calendario extends VBox {
         Label titulo = new Label("Consultas de " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         titulo.getStyleClass().add("calendario-hover-titulo");
         titulo.setMaxWidth(Double.MAX_VALUE);
-        overlay.getChildren().add(titulo);
+        HBox.setHgrow(titulo, Priority.ALWAYS);
+
+        Button fechar = new Button("×");
+        fechar.getStyleClass().add("botao-fechar-overlay");
+        fechar.setOnAction(evento -> fecharOverlay());
+
+        HBox cabecalhoOverlay = new HBox(8);
+        cabecalhoOverlay.setAlignment(Pos.CENTER_LEFT);
+        cabecalhoOverlay.getChildren().addAll(titulo, fechar);
+        overlay.getChildren().add(cabecalhoOverlay);
 
         for (Consulta c : consultasDoMes.getOrDefault(dia, List.of())) {
             VBox item = new VBox();
