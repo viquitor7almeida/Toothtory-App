@@ -33,7 +33,9 @@ public class Sidebar extends VBox {
 
         getChildren().addAll(cabecalho, divisor);
         adicionarItem("dashboard", "Home");
+        adicionarItem("calendario", "Calendário");
         adicionarItem("pacientes", "Pacientes");
+        adicionarItem("anamnese", "Anamnese");
         adicionarItem("procedimentos", "Procedimentos");
         adicionarItem("consultas", "Consultas");
         adicionarItem("financeiro", "Financeiro");
