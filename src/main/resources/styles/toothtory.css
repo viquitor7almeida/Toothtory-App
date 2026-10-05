@@ -565,6 +565,120 @@
 .default-color1.chart-bar { -fx-bar-fill: -rosa-medio; }
 .default-color2.chart-bar { -fx-bar-fill: -verde; }
 
+.calendario {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: -sombra-cardo;
+    -fx-padding: 14 16 16 16;
+}
+
+.calendario-mes-ano {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 16px;
+    -fx-text-fill: -texto;
+}
+
+.botao-navegacao-mes {
+    -fx-padding: 6 0;
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 14px;
+}
+
+.calendario-semana {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 10.5px;
+    -fx-text-fill: -texto-suave;
+    -fx-padding: 0 0 4 0;
+}
+
+.calendario-dia {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-padding: 6 8;
+    -fx-spacing: 4;
+    -fx-cursor: hand;
+}
+
+.calendario-dia:hover {
+    -fx-background-color: -rosa-suave;
+}
+
+.calendario-dia-outro-mes {
+    -fx-cursor: default;
+}
+
+.calendario-dia-outro-mes:hover {
+    -fx-background-color: transparent;
+}
+
+.calendario-dia-outro-mes .calendario-dia-numero {
+    -fx-text-fill: #CFCACB;
+}
+
+.calendario-dia-numero {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: -texto;
+}
+
+.calendario-hoje-numero {
+    -fx-background-color: -dourado;
+    -fx-background-radius: 999px;
+    -fx-text-fill: white;
+    -fx-padding: 1 7;
+    -fx-font-family: "Inter SemiBold";
+}
+
+.calendario-bolinha {
+    -fx-background-color: -dourado;
+    -fx-background-radius: 999px;
+}
+
+.calendario-hover {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(62, 59, 60, 0.16), 18, 0, 0, 5);
+    -fx-padding: 12 14;
+    -fx-spacing: 8;
+}
+
+.calendario-hover-titulo {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: -texto;
+    -fx-padding: 0 2;
+}
+
+.calendario-hover-item {
+    -fx-background-color: -gelo;
+    -fx-background-radius: 8;
+    -fx-padding: 8 10;
+    -fx-spacing: 2;
+    -fx-cursor: hand;
+}
+
+.calendario-hover-item:hover {
+    -fx-background-color: -rosa-suave;
+}
+
+.calendario-hover-item-linha1 {
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -texto;
+}
+
+.calendario-hover-item-linha2 {
+    -fx-font-family: "Inter";
+    -fx-font-size: 11.5px;
+    -fx-text-fill: -texto-suave;
+}
+
 .chart-hover-info {
     -fx-background-color: -branco;
     -fx-background-radius: 999px;

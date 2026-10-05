@@ -3,18 +3,38 @@
 <?import javafx.scene.layout.*?>
 <VBox styleClass="tela" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.ConsultaController">
     <Label text="Consultas" styleClass="titulo-pagina"/>
-    <TableView fx:id="tabelaConsultas" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colPaciente" text="PACIENTE"/>
-            <TableColumn fx:id="colDataHora" text="DATA/HORA" prefWidth="150"/>
-            <TableColumn fx:id="colProcedimento" text="PROCEDIMENTO"/>
-            <TableColumn fx:id="colValor" text="VALOR" prefWidth="130"/>
-            <TableColumn fx:id="colObservacoes" text="OBS." prefWidth="240"/>
-        </columns>
-    </TableView>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="‹" styleClass="botao-navegacao-mes" minWidth="34" onAction="#mesAnterior"/>
+        <Label fx:id="labelMesAno" styleClass="calendario-mes-ano" minWidth="150" alignment="CENTER"/>
+        <Button text="›" styleClass="botao-navegacao-mes" minWidth="34" onAction="#mesSeguinte"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Hoje" onAction="#irParaHoje"/>
+    </HBox>
+    <StackPane fx:id="areaCalendario" styleClass="calendario" VBox.vgrow="ALWAYS" minHeight="380">
+        <GridPane fx:id="gradeDias" hgap="4" vgap="4">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints/>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+            </rowConstraints>
+        </GridPane>
+    </StackPane>
     <Accordion>
         <panes>
-            <TitledPane text="Nova Consulta">
+            <TitledPane fx:id="painelNovaConsulta" text="Nova Consulta">
                 <VBox spacing="12">
                     <Label text="Paciente" styleClass="rotulo-campo"/>
                     <ComboBox fx:id="comboPaciente" promptText="Selecione o paciente" maxWidth="1.7976931348623157E308"/>
@@ -37,7 +57,6 @@
                     <TextArea fx:id="txtObservacoes" prefHeight="60"/>
                     <HBox spacing="10">
                         <Button text="Salvar" styleClass="button-primario" onAction="#salvarConsulta"/>
-                        <Button text="Editar" onAction="#editarConsulta"/>
                         <Button text="Limpar" onAction="#limparFormulario"/>
                         <Button text="Excluir" styleClass="button-perigo" onAction="#excluirConsulta"/>
                     </HBox>

@@ -8,28 +8,47 @@ import com.toothtory.services.ProcedimentoService;
 import com.toothtory.domain.entities.Consulta;
 import com.toothtory.domain.entities.Paciente;
 import com.toothtory.domain.entities.Procedimento;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ConsultaController {
-    @FXML private TableView<Consulta> tabelaConsultas;
-    @FXML private TableColumn<Consulta, String> colPaciente;
-    @FXML private TableColumn<Consulta, String> colProcedimento;
-    @FXML private TableColumn<Consulta, String> colObservacoes;
-    @FXML private TableColumn<Consulta, Double> colValor;
-    @FXML private TableColumn<Consulta, LocalDateTime> colDataHora;
+
+    private static final Locale PT_BR = new Locale("pt", "BR");
+    private static final NumberFormat FORMATO_MOEDA = NumberFormat.getCurrencyInstance(PT_BR);
+    private static final String[] DIAS_SEMANA = {"DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"};
+
+    @FXML private Label labelMesAno;
+    @FXML private StackPane areaCalendario;
+    @FXML private GridPane gradeDias;
+    @FXML private TitledPane painelNovaConsulta;
     @FXML private ComboBox<Paciente> comboPaciente;
     @FXML private ComboBox<Procedimento> comboProcedimento;
     @FXML private DatePicker datePicker;
@@ -41,58 +60,26 @@ public class ConsultaController {
     @FXML private RadioButton rbProcedimentoManual;
     @FXML private ToggleGroup grupoProcedimento;
 
-    private static final Locale PT_BR = new Locale("pt", "BR");
-    private static final NumberFormat FORMATO_MOEDA = NumberFormat.getCurrencyInstance(PT_BR);
-
     private final ConsultaService consultaService = new ConsultaService();
     private final PacienteService pacienteService = new PacienteService();
     private final ProcedimentoService procedimentoService = new ProcedimentoService();
-    private ObservableList<Consulta> consultasList = FXCollections.observableArrayList();
-    private ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
-    private ObservableList<Procedimento> procedimentosList = FXCollections.observableArrayList();
+    private final ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
+    private final ObservableList<Procedimento> procedimentosList = FXCollections.observableArrayList();
+    private final Map<LocalDate, List<Consulta>> consultasDoMes = new HashMap<>();
+    private final PauseTransition atrasoFecharOverlay = new PauseTransition(Duration.millis(250));
+
+    private YearMonth mesAtual = YearMonth.now();
+    private VBox overlayAtual;
     private Long idEditando = null;
 
     @FXML
     public void initialize() {
-        configurarColunas();
         carregarComboBoxes();
-        tabelaConsultas.setPlaceholder(rotuloVazio("Nenhuma consulta registrada"));
-        carregarConsultas();
         configurarToggleGroup();
         configurarStringConverterPaciente();
         configurarStringConverterProcedimento();
-    }
-
-    private void configurarColunas() {
-        colDataHora.setCellValueFactory(new PropertyValueFactory<>("dataHora"));
-        colProcedimento.setCellValueFactory(new PropertyValueFactory<>("nomeProcedimento"));
-        colValor.setCellValueFactory(new PropertyValueFactory<>("valorProcedimento"));
-        colObservacoes.setCellValueFactory(new PropertyValueFactory<>("observacoes"));
-
-        colPaciente.prefWidthProperty().bind(tabelaConsultas.widthProperty()
-                .subtract(20)
-                .subtract(colDataHora.widthProperty())
-                .subtract(colValor.widthProperty())
-                .subtract(colObservacoes.widthProperty())
-                .multiply(0.45));
-        colProcedimento.prefWidthProperty().bind(tabelaConsultas.widthProperty()
-                .subtract(20)
-                .subtract(colDataHora.widthProperty())
-                .subtract(colValor.widthProperty())
-                .subtract(colObservacoes.widthProperty())
-                .multiply(0.55));
-        colPaciente.setResizable(false);
-        colProcedimento.setResizable(false);
-        formatarColunaDataHora(colDataHora);
-        formatarColunaMoeda(colValor);
-
-        colPaciente.setCellValueFactory(cellData -> {
-            Long pacienteId = cellData.getValue().getPacienteId();
-            Paciente p = pacienteService.findById(pacienteId).orElse(null);
-            return new SimpleStringProperty(p == null ? "" : p.getNome());
-        });
-
-        tabelaConsultas.setItems(consultasList);
+        configurarFechamentoOverlay();
+        atualizarCalendario();
     }
 
     private void carregarComboBoxes() {
@@ -149,42 +136,233 @@ public class ConsultaController {
         });
     }
 
-    private void formatarColunaDataHora(TableColumn<Consulta, LocalDateTime> coluna) {
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        coluna.setCellFactory(c -> new TableCell<Consulta, LocalDateTime>() {
-            @Override
-            protected void updateItem(LocalDateTime item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.format(formato));
-            }
-        });
+    private void atualizarCalendario() {
+        List<Consulta> consultas = consultaService.buscarPorPeriodo(
+                mesAtual.atDay(1).atStartOfDay(),
+                mesAtual.atEndOfMonth().atTime(23, 59, 59));
+
+        consultasDoMes.clear();
+        for (Consulta c : consultas) {
+            consultasDoMes.computeIfAbsent(c.getDataHora().toLocalDate(), k -> new ArrayList<>()).add(c);
+        }
+        for (List<Consulta> lista : consultasDoMes.values()) {
+            lista.sort(Comparator.comparing(Consulta::getDataHora));
+        }
+
+        labelMesAno.setText(capitalizar(mesAtual.format(DateTimeFormatter.ofPattern("MMMM yyyy", PT_BR))));
+        montarGrade();
     }
 
-    private void formatarColunaMoeda(TableColumn<Consulta, Double> coluna) {
-        coluna.setCellFactory(c -> new TableCell<Consulta, Double>() {
-            {
-                setAlignment(Pos.CENTER_RIGHT);
-            }
+    private void montarGrade() {
+        gradeDias.getChildren().clear();
 
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : FORMATO_MOEDA.format(item));
-            }
-        });
-    }
+        for (int i = 0; i < 7; i++) {
+            Label diaSemana = new Label(DIAS_SEMANA[i]);
+            diaSemana.getStyleClass().add("calendario-semana");
+            diaSemana.setMaxWidth(Double.MAX_VALUE);
+            diaSemana.setAlignment(Pos.CENTER);
+            gradeDias.add(diaSemana, i, 0);
+        }
 
-    private double lerValor(String texto) {
-        if (texto == null || texto.trim().isEmpty()) throw new IllegalArgumentException("Informe o valor do procedimento");
-        try {
-            return Double.parseDouble(texto.trim().replace(",", "."));
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Informe um valor numérico válido");
+        int deslocamento = mesAtual.atDay(1).getDayOfWeek().getValue() % 7;
+        LocalDate primeiroDia = mesAtual.atDay(1).minusDays(deslocamento);
+
+        for (int i = 0; i < 42; i++) {
+            LocalDate data = primeiroDia.plusDays(i);
+            gradeDias.add(criarCelula(data), i % 7, 1 + i / 7);
         }
     }
 
-    private void carregarConsultas() {
-        consultasList.setAll(consultaService.listarTodas());
+    private VBox criarCelula(LocalDate data) {
+        VBox celula = new VBox();
+        celula.getStyleClass().add("calendario-dia");
+
+        Label numero = new Label(String.valueOf(data.getDayOfMonth()));
+        numero.getStyleClass().add("calendario-dia-numero");
+        if (data.equals(LocalDate.now())) {
+            numero.getStyleClass().add("calendario-hoje-numero");
+        }
+        celula.getChildren().add(numero);
+
+        boolean temConsultas = consultasDoMes.containsKey(data);
+        if (temConsultas) {
+            Region espacador = new Region();
+            VBox.setVgrow(espacador, Priority.ALWAYS);
+            Region bolinha = new Region();
+            bolinha.getStyleClass().add("calendario-bolinha");
+            bolinha.setMinSize(6, 6);
+            bolinha.setMaxSize(6, 6);
+            HBox linhaBolinha = new HBox();
+            linhaBolinha.setAlignment(Pos.CENTER);
+            linhaBolinha.getChildren().add(bolinha);
+            celula.getChildren().addAll(espacador, linhaBolinha);
+        }
+
+        if (data.getMonth() != mesAtual.getMonth()) {
+            celula.getStyleClass().add("calendario-dia-outro-mes");
+            return celula;
+        }
+
+        celula.setOnMouseClicked(evento -> {
+            evento.consume();
+            aoClicarDia(data, temConsultas, celula);
+        });
+        return celula;
+    }
+
+    private void aoClicarDia(LocalDate data, boolean temConsultas, Node celula) {
+        fecharOverlay();
+
+        if (!temConsultas) {
+            String dataTexto = data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            if (Alerta.confirmar("Nova consulta", "Quer marcar uma nova consulta em " + dataTexto + "?")) {
+                abrirFormularioNovoConsulta(data);
+            }
+            return;
+        }
+
+        mostrarOverlayDia(data, celula);
+    }
+
+    @FXML
+    private void mesAnterior() {
+        mesAtual = mesAtual.minusMonths(1);
+        fecharOverlay();
+        atualizarCalendario();
+    }
+
+    @FXML
+    private void mesSeguinte() {
+        mesAtual = mesAtual.plusMonths(1);
+        fecharOverlay();
+        atualizarCalendario();
+    }
+
+    @FXML
+    private void irParaHoje() {
+        mesAtual = YearMonth.now();
+        fecharOverlay();
+        atualizarCalendario();
+    }
+
+    private void abrirFormularioNovoConsulta(LocalDate data) {
+        limparFormulario();
+        datePicker.setValue(data);
+        painelNovaConsulta.setExpanded(true);
+        comboPaciente.requestFocus();
+    }
+
+    private void mostrarOverlayDia(LocalDate dia, Node celula) {
+        fecharOverlay();
+
+        VBox overlay = new VBox();
+        overlay.getStyleClass().add("calendario-hover");
+        overlay.setManaged(false);
+        overlay.setMinWidth(320);
+        overlay.setPrefWidth(320);
+        overlay.setMaxWidth(320);
+
+        Label titulo = new Label("Consultas de " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        titulo.getStyleClass().add("calendario-hover-titulo");
+        titulo.setMaxWidth(Double.MAX_VALUE);
+        overlay.getChildren().add(titulo);
+
+        for (Consulta c : consultasDoMes.getOrDefault(dia, List.of())) {
+            VBox item = new VBox();
+            item.getStyleClass().add("calendario-hover-item");
+
+            Label linha1 = new Label(c.getDataHora().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+                    + " · " + nomePaciente(c.getPacienteId()));
+            linha1.getStyleClass().add("calendario-hover-item-linha1");
+
+            Label linha2 = new Label(c.getNomeProcedimento() + " · " + FORMATO_MOEDA.format(c.getValorProcedimento()));
+            linha2.getStyleClass().add("calendario-hover-item-linha2");
+
+            item.getChildren().addAll(linha1, linha2);
+            item.setOnMouseClicked(evento -> {
+                evento.consume();
+                fecharOverlay();
+                carregarConsultaNoFormulario(c);
+            });
+            overlay.getChildren().add(item);
+        }
+
+        Button nova = new Button("Nova consulta neste dia");
+        nova.getStyleClass().add("button-primario");
+        nova.setMaxWidth(Double.MAX_VALUE);
+        nova.setOnAction(evento -> {
+            fecharOverlay();
+            abrirFormularioNovoConsulta(dia);
+        });
+        overlay.getChildren().add(nova);
+
+        overlay.setOnMouseEntered(evento -> atrasoFecharOverlay.stop());
+        overlay.setOnMouseExited(evento -> atrasoFecharOverlay.playFromStart());
+        overlay.setOnMouseClicked(evento -> evento.consume());
+
+        areaCalendario.getChildren().add(overlay);
+        overlay.applyCss();
+        overlay.autosize();
+        overlay.layout();
+
+        Bounds limitesCelula = celula.localToScene(celula.getBoundsInLocal());
+        Bounds limitesArea = areaCalendario.localToScene(areaCalendario.getBoundsInLocal());
+
+        double x = limitesCelula.getMaxX() - limitesArea.getMinX() + 8;
+        double y = limitesCelula.getMinY() - limitesArea.getMinY();
+
+        if (x + overlay.getWidth() > areaCalendario.getWidth() - 6) {
+            x = limitesCelula.getMinX() - limitesArea.getMinX() - overlay.getWidth() - 8;
+        }
+        if (y + overlay.getHeight() > areaCalendario.getHeight() - 6) {
+            y = areaCalendario.getHeight() - overlay.getHeight() - 6;
+        }
+        if (x < 6) x = 6;
+        if (y < 6) y = 6;
+
+        overlay.setLayoutX(x);
+        overlay.setLayoutY(y);
+        overlayAtual = overlay;
+    }
+
+    private void configurarFechamentoOverlay() {
+        atrasoFecharOverlay.setOnFinished(evento -> fecharOverlay());
+        areaCalendario.addEventHandler(MouseEvent.MOUSE_CLICKED, evento -> fecharOverlay());
+    }
+
+    private void fecharOverlay() {
+        atrasoFecharOverlay.stop();
+        if (overlayAtual != null) {
+            areaCalendario.getChildren().remove(overlayAtual);
+            overlayAtual = null;
+        }
+    }
+
+    private void carregarConsultaNoFormulario(Consulta c) {
+        Paciente p = pacienteService.findById(c.getPacienteId()).orElse(null);
+        if (p != null) comboPaciente.getSelectionModel().select(p);
+        datePicker.setValue(c.getDataHora().toLocalDate());
+        txtHora.setText(c.getDataHora().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        txtObservacoes.setText(c.getObservacoes());
+        idEditando = c.getId();
+
+        boolean manual = true;
+        for (Procedimento proc : procedimentosList) {
+            if (proc.getNome().equals(c.getNomeProcedimento()) && proc.getValor() == c.getValorProcedimento()) {
+                comboProcedimento.getSelectionModel().select(proc);
+                manual = false;
+                break;
+            }
+        }
+        if (manual) {
+            rbProcedimentoManual.setSelected(true);
+            txtNomeProcedimentoManual.setText(c.getNomeProcedimento());
+            txtValorManual.setText(String.format(PT_BR, "%.2f", c.getValorProcedimento()));
+        } else {
+            rbProcedimentoExistente.setSelected(true);
+        }
+
+        painelNovaConsulta.setExpanded(true);
     }
 
     @FXML
@@ -231,7 +409,11 @@ public class ConsultaController {
                 }
             }
             limparFormulario();
-            carregarConsultas();
+            fecharOverlay();
+            if (!YearMonth.from(dataHora).equals(mesAtual)) {
+                mesAtual = YearMonth.from(dataHora);
+            }
+            atualizarCalendario();
             Notificacao.sucesso("Consulta registrada.");
         } catch (Exception e) {
             Notificacao.erro(e.getMessage());
@@ -252,53 +434,35 @@ public class ConsultaController {
     }
 
     @FXML
-    private void editarConsulta() {
-        Consulta sel = tabelaConsultas.getSelectionModel().getSelectedItem();
-        if (sel == null) {
-            Notificacao.aviso("Selecione uma consulta.");
-            return;
-        }
-        Paciente p = pacienteService.findById(sel.getPacienteId()).orElse(null);
-        if (p != null) comboPaciente.getSelectionModel().select(p);
-        datePicker.setValue(sel.getDataHora().toLocalDate());
-        txtHora.setText(sel.getDataHora().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        txtObservacoes.setText(sel.getObservacoes());
-        idEditando = sel.getId();
-
-        boolean manual = true;
-        for (Procedimento proc : procedimentosList) {
-            if (proc.getNome().equals(sel.getNomeProcedimento()) && proc.getValor() == sel.getValorProcedimento()) {
-                comboProcedimento.getSelectionModel().select(proc);
-                manual = false;
-                break;
-            }
-        }
-        if (manual) {
-            rbProcedimentoManual.setSelected(true);
-            txtNomeProcedimentoManual.setText(sel.getNomeProcedimento());
-            txtValorManual.setText(String.format(PT_BR, "%.2f", sel.getValorProcedimento()));
-        } else {
-            rbProcedimentoExistente.setSelected(true);
-        }
-    }
-
-    @FXML
     private void excluirConsulta() {
-        Consulta sel = tabelaConsultas.getSelectionModel().getSelectedItem();
-        if (sel == null) {
-            Notificacao.aviso("Selecione uma consulta.");
+        if (idEditando == null) {
+            Notificacao.aviso("Clique em um dia com consulta e depois na consulta para carregá-la.");
             return;
         }
         if (Alerta.confirmar("Confirmar exclusão", "Excluir consulta?")) {
-            consultaService.excluir(sel.getId());
-            carregarConsultas();
+            consultaService.excluir(idEditando);
+            idEditando = null;
             limparFormulario();
+            fecharOverlay();
+            atualizarCalendario();
         }
     }
 
-    private Label rotuloVazio(String texto) {
-        Label rotulo = new Label(texto);
-        rotulo.getStyleClass().add("tabela-vazia");
-        return rotulo;
+    private double lerValor(String texto) {
+        if (texto == null || texto.trim().isEmpty()) throw new IllegalArgumentException("Informe o valor do procedimento");
+        try {
+            return Double.parseDouble(texto.trim().replace(",", "."));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Informe um valor numérico válido");
+        }
+    }
+
+    private String nomePaciente(Long pacienteId) {
+        Paciente p = pacienteService.findById(pacienteId).orElse(null);
+        return p == null ? "Paciente removido" : p.getNome();
+    }
+
+    private String capitalizar(String texto) {
+        return texto.substring(0, 1).toUpperCase() + texto.substring(1);
     }
 }
