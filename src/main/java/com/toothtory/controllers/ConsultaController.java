@@ -12,17 +12,19 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class ConsultaController {
     @FXML private TableView<Consulta> tabelaConsultas;
-    @FXML private TableColumn<Consulta, Long> colId;
     @FXML private TableColumn<Consulta, String> colPaciente;
     @FXML private TableColumn<Consulta, String> colProcedimento;
     @FXML private TableColumn<Consulta, String> colObservacoes;
@@ -38,6 +40,9 @@ public class ConsultaController {
     @FXML private RadioButton rbProcedimentoExistente;
     @FXML private RadioButton rbProcedimentoManual;
     @FXML private ToggleGroup grupoProcedimento;
+
+    private static final Locale PT_BR = new Locale("pt", "BR");
+    private static final NumberFormat FORMATO_MOEDA = NumberFormat.getCurrencyInstance(PT_BR);
 
     private final ConsultaService consultaService = new ConsultaService();
     private final PacienteService pacienteService = new PacienteService();
@@ -59,11 +64,27 @@ public class ConsultaController {
     }
 
     private void configurarColunas() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colDataHora.setCellValueFactory(new PropertyValueFactory<>("dataHora"));
         colProcedimento.setCellValueFactory(new PropertyValueFactory<>("nomeProcedimento"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valorProcedimento"));
         colObservacoes.setCellValueFactory(new PropertyValueFactory<>("observacoes"));
+
+        colPaciente.prefWidthProperty().bind(tabelaConsultas.widthProperty()
+                .subtract(20)
+                .subtract(colDataHora.widthProperty())
+                .subtract(colValor.widthProperty())
+                .subtract(colObservacoes.widthProperty())
+                .multiply(0.45));
+        colProcedimento.prefWidthProperty().bind(tabelaConsultas.widthProperty()
+                .subtract(20)
+                .subtract(colDataHora.widthProperty())
+                .subtract(colValor.widthProperty())
+                .subtract(colObservacoes.widthProperty())
+                .multiply(0.55));
+        colPaciente.setResizable(false);
+        colProcedimento.setResizable(false);
+        formatarColunaDataHora(colDataHora);
+        formatarColunaMoeda(colValor);
 
         colPaciente.setCellValueFactory(cellData -> {
             Long pacienteId = cellData.getValue().getPacienteId();
@@ -128,6 +149,40 @@ public class ConsultaController {
         });
     }
 
+    private void formatarColunaDataHora(TableColumn<Consulta, LocalDateTime> coluna) {
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        coluna.setCellFactory(c -> new TableCell<Consulta, LocalDateTime>() {
+            @Override
+            protected void updateItem(LocalDateTime item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : item.format(formato));
+            }
+        });
+    }
+
+    private void formatarColunaMoeda(TableColumn<Consulta, Double> coluna) {
+        coluna.setCellFactory(c -> new TableCell<Consulta, Double>() {
+            {
+                setAlignment(Pos.CENTER_RIGHT);
+            }
+
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : FORMATO_MOEDA.format(item));
+            }
+        });
+    }
+
+    private double lerValor(String texto) {
+        if (texto == null || texto.trim().isEmpty()) throw new IllegalArgumentException("Informe o valor do procedimento");
+        try {
+            return Double.parseDouble(texto.trim().replace(",", "."));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Informe um valor numérico válido");
+        }
+    }
+
     private void carregarConsultas() {
         consultasList.setAll(consultaService.listarTodas());
     }
@@ -157,7 +212,7 @@ public class ConsultaController {
                 } else {
                     String nomeProc = txtNomeProcedimentoManual.getText();
                     if (nomeProc == null || nomeProc.trim().isEmpty()) throw new IllegalArgumentException("Informe o nome do procedimento");
-                    double valor = Double.parseDouble(txtValorManual.getText());
+                    double valor = lerValor(txtValorManual.getText());
                     c.setNomeProcedimento(nomeProc);
                     c.setValorProcedimento(valor);
                 }
@@ -171,7 +226,7 @@ public class ConsultaController {
                 } else {
                     String nomeProc = txtNomeProcedimentoManual.getText();
                     if (nomeProc == null || nomeProc.trim().isEmpty()) throw new IllegalArgumentException("Informe o nome do procedimento");
-                    double valor = Double.parseDouble(txtValorManual.getText());
+                    double valor = lerValor(txtValorManual.getText());
                     consultaService.registrarConsultaComProcedimentoManual(paciente.getId(), dataHora, nomeProc, valor, observacoes);
                 }
             }
@@ -206,7 +261,7 @@ public class ConsultaController {
         Paciente p = pacienteService.findById(sel.getPacienteId()).orElse(null);
         if (p != null) comboPaciente.getSelectionModel().select(p);
         datePicker.setValue(sel.getDataHora().toLocalDate());
-        txtHora.setText(sel.getDataHora().toLocalTime().toString());
+        txtHora.setText(sel.getDataHora().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         txtObservacoes.setText(sel.getObservacoes());
         idEditando = sel.getId();
 
@@ -221,7 +276,7 @@ public class ConsultaController {
         if (manual) {
             rbProcedimentoManual.setSelected(true);
             txtNomeProcedimentoManual.setText(sel.getNomeProcedimento());
-            txtValorManual.setText(String.valueOf(sel.getValorProcedimento()));
+            txtValorManual.setText(String.format(PT_BR, "%.2f", sel.getValorProcedimento()));
         } else {
             rbProcedimentoExistente.setSelected(true);
         }

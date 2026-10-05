@@ -5,12 +5,11 @@
     <Label text="Consultas" styleClass="titulo-pagina"/>
     <TableView fx:id="tabelaConsultas" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colId" text="ID"/>
-            <TableColumn fx:id="colPaciente" text="Paciente"/>
-            <TableColumn fx:id="colDataHora" text="Data/Hora"/>
-            <TableColumn fx:id="colProcedimento" text="Procedimento"/>
-            <TableColumn fx:id="colValor" text="Valor"/>
-            <TableColumn fx:id="colObservacoes" text="Obs."/>
+            <TableColumn fx:id="colPaciente" text="PACIENTE"/>
+            <TableColumn fx:id="colDataHora" text="DATA/HORA" prefWidth="150"/>
+            <TableColumn fx:id="colProcedimento" text="PROCEDIMENTO"/>
+            <TableColumn fx:id="colValor" text="VALOR" prefWidth="130"/>
+            <TableColumn fx:id="colObservacoes" text="OBS." prefWidth="240"/>
         </columns>
     </TableView>
     <Accordion>

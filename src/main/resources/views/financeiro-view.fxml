@@ -8,15 +8,8 @@
         <Label text="Ano" styleClass="rotulo-campo"/>
         <ComboBox fx:id="comboAno"/>
     </HBox>
-    <TableView fx:id="tabelaResumo" prefHeight="220">
-        <columns>
-            <TableColumn fx:id="colMes" text="Mês"/>
-            <TableColumn fx:id="colReceita" text="Receita"/>
-            <TableColumn fx:id="colGastos" text="Gastos"/>
-            <TableColumn fx:id="colLucro" text="Lucro"/>
-        </columns>
-    </TableView>
-    <BarChart fx:id="graficoMensal" styleClass="grafico" prefHeight="300" title="Receita, Gastos e Lucro por Mês">
+    <Label fx:id="infoGraficoLabel" text="Passe o mouse sobre uma barra para ver o valor" styleClass="chart-hover-info"/>
+    <BarChart fx:id="graficoMensal" styleClass="grafico" prefHeight="300" VBox.vgrow="ALWAYS" title="Receita, Gastos e Lucro por Mês">
         <xAxis>
             <CategoryAxis label="Mês"/>
         </xAxis>
@@ -52,10 +45,9 @@
     </HBox>
     <TableView fx:id="tabelaGastos" prefHeight="200">
         <columns>
-            <TableColumn fx:id="colGastoId" text="ID"/>
-            <TableColumn fx:id="colGastoNome" text="Nome"/>
-            <TableColumn fx:id="colGastoValor" text="Valor"/>
-            <TableColumn fx:id="colGastoData" text="Data"/>
+            <TableColumn fx:id="colGastoNome" text="NOME"/>
+            <TableColumn fx:id="colGastoValor" text="VALOR" prefWidth="130"/>
+            <TableColumn fx:id="colGastoData" text="DATA" prefWidth="130"/>
         </columns>
     </TableView>
 </VBox>

@@ -12,7 +12,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class PacienteController {
     @FXML private TableView<Paciente> tabelaPacientes;
-    @FXML private TableColumn<Paciente, Long> colId;
     @FXML private TableColumn<Paciente, String> colNome;
     @FXML private TableColumn<Paciente, String> colEmail;
     @FXML private TableColumn<Paciente, String> colCelular;
@@ -35,10 +34,16 @@ public class PacienteController {
     }
 
     private void configurarColunas() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colCelular.setCellValueFactory(new PropertyValueFactory<>("celular"));
+
+        colNome.prefWidthProperty().bind(tabelaPacientes.widthProperty()
+                .subtract(20)
+                .subtract(colEmail.widthProperty())
+                .subtract(colCelular.widthProperty()));
+        colNome.setResizable(false);
+
         tabelaPacientes.setItems(pacientesList);
     }
 

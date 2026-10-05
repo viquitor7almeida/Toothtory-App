@@ -9,10 +9,9 @@
     </HBox>
     <TableView fx:id="tabelaPacientes" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
-            <TableColumn fx:id="colNome" text="Nome" prefWidth="200"/>
-            <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
-            <TableColumn fx:id="colCelular" text="Celular" prefWidth="120"/>
+            <TableColumn fx:id="colNome" text="NOME"/>
+            <TableColumn fx:id="colEmail" text="EMAIL" prefWidth="210"/>
+            <TableColumn fx:id="colCelular" text="CELULAR" prefWidth="140"/>
         </columns>
     </TableView>
     <Label text="Cadastro / Edição" styleClass="titulo-secao"/>

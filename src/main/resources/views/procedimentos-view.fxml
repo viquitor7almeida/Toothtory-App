@@ -9,9 +9,8 @@
     </HBox>
     <TableView fx:id="tabelaProcedimentos" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colId" text="ID"/>
-            <TableColumn fx:id="colNome" text="Nome"/>
-            <TableColumn fx:id="colValor" text="Valor"/>
+            <TableColumn fx:id="colNome" text="NOME"/>
+            <TableColumn fx:id="colValor" text="VALOR" prefWidth="160"/>
         </columns>
     </TableView>
     <Label text="Cadastro / Edição" styleClass="titulo-secao"/>
