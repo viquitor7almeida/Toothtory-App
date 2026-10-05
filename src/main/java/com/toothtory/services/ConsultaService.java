@@ -61,6 +61,10 @@ public class ConsultaService {
         return repository.somaValorPorPeriodo(inicio, fim);
     }
 
+    public List<Integer> anosComRegistros() {
+        return repository.findAnosComRegistros();
+    }
+
     public void registrarConsultaComNovoPaciente(String nomePaciente, String endereco, String email, String celular, 
                                                   LocalDateTime dataHora, Procedimento procedimento, String observacoes) {
         Paciente novo = new Paciente();

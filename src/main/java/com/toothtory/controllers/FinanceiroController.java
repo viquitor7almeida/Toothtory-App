@@ -60,9 +60,9 @@ public class FinanceiroController {
         carregarNomesMeses();
         configurarColunas();
         tabelaGastos.setPlaceholder(rotuloVazio("Nenhum gasto declarado neste mês"));
+        graficoMensal.setAnimated(false);
         configurarCombos();
         configurarInfoGrafico();
-        graficoMensal.setAnimated(false);
         carregarResumoAnual();
         carregarGastos();
     }
@@ -117,14 +117,6 @@ public class FinanceiroController {
     }
 
     private void configurarCombos() {
-        int anoAtual = YearMonth.now().getYear();
-        List<Integer> anos = new ArrayList<>();
-        for (int a = anoAtual - 5; a <= anoAtual + 5; a++) {
-            anos.add(a);
-        }
-        comboAno.setItems(FXCollections.observableArrayList(anos));
-        comboAno.getSelectionModel().select(Integer.valueOf(anoAtual));
-
         comboMes.setItems(FXCollections.observableArrayList(nomesMeses));
         comboMes.getSelectionModel().select(YearMonth.now().getMonthValue() - 1);
 
@@ -133,6 +125,21 @@ public class FinanceiroController {
             carregarGastos();
         });
         comboMes.getSelectionModel().selectedItemProperty().addListener((obs, old, novo) -> carregarGastos());
+
+        atualizarAnos();
+    }
+
+    private void atualizarAnos() {
+        Integer anoSelecionado = comboAno.getSelectionModel().getSelectedItem();
+        List<Integer> anos = financeiroService.anosComRegistros();
+        comboAno.setItems(FXCollections.observableArrayList(anos));
+        if (anos.isEmpty()) {
+            comboAno.getSelectionModel().clearSelection();
+        } else if (anos.contains(anoSelecionado)) {
+            comboAno.getSelectionModel().select(anoSelecionado);
+        } else {
+            comboAno.getSelectionModel().select(0);
+        }
     }
 
     private YearMonth mesSelecionado() {
@@ -258,6 +265,7 @@ public class FinanceiroController {
             idEditando = null;
 
             limparFormularioGasto();
+            atualizarAnos();
             comboAno.getSelectionModel().select(Integer.valueOf(data.getYear()));
             comboMes.getSelectionModel().select(data.getMonthValue() - 1);
             carregarResumoAnual();
@@ -298,6 +306,7 @@ public class FinanceiroController {
         }
         if (Alerta.confirmar("Confirmar exclusão", "Excluir gasto?")) {
             gastoService.excluir(sel.getId());
+            atualizarAnos();
             carregarResumoAnual();
             carregarGastos();
             limparFormularioGasto();

@@ -49,6 +49,10 @@ public class GastoService {
         return repository.somaValorPorPeriodo(mes.atDay(1), mes.atEndOfMonth());
     }
 
+    public List<Integer> anosComRegistros() {
+        return repository.findAnosComRegistros();
+    }
+
     private void validarGasto(Gasto gasto) {
         if (gasto.getNome() == null || gasto.getNome().trim().isEmpty()) {
             throw new IllegalArgumentException("Nome do gasto é obrigatório");

@@ -13,4 +13,5 @@ public interface GastoRepository {
     List<Gasto> findAll();
     List<Gasto> findByPeriodo(LocalDate inicio, LocalDate fim);
     double somaValorPorPeriodo(LocalDate inicio, LocalDate fim);
+    List<Integer> findAnosComRegistros();
 }
