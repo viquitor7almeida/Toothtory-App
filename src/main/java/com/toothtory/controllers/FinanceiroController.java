@@ -16,6 +16,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.text.NumberFormat;
@@ -31,6 +32,8 @@ import java.util.Locale;
 public class FinanceiroController {
     @FXML private ComboBox<Integer> comboAno;
     @FXML private ComboBox<String> comboMes;
+    @FXML private ScrollPane scrollTela;
+    @FXML private VBox telaFinanceiro;
     @FXML private Label infoGraficoLabel;
     @FXML private BarChart<String, Number> graficoMensal;
     @FXML private TableView<Gasto> tabelaGastos;
@@ -58,6 +61,7 @@ public class FinanceiroController {
     @FXML
     public void initialize() {
         carregarNomesMeses();
+        configurarScrollTela();
         configurarColunas();
         tabelaGastos.setPlaceholder(rotuloVazio("Nenhum gasto declarado neste mês"));
         graficoMensal.setAnimated(false);
@@ -65,6 +69,14 @@ public class FinanceiroController {
         configurarInfoGrafico();
         carregarResumoAnual();
         carregarGastos();
+    }
+
+    private void configurarScrollTela() {
+        scrollTela.viewportBoundsProperty().addListener((obs, antigo, limites) -> {
+            if (limites != null) {
+                telaFinanceiro.setMinHeight(limites.getHeight());
+            }
+        });
     }
 
     private void carregarNomesMeses() {

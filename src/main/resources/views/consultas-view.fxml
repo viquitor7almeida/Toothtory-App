@@ -5,35 +5,7 @@
     <content>
         <VBox styleClass="tela">
             <Label text="Consultas" styleClass="titulo-pagina"/>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button text="‹" styleClass="botao-navegacao-mes" minWidth="34" onAction="#mesAnterior"/>
-                <Label fx:id="labelMesAno" styleClass="calendario-mes-ano" minWidth="150" alignment="CENTER"/>
-                <Button text="›" styleClass="botao-navegacao-mes" minWidth="34" onAction="#mesSeguinte"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Hoje" onAction="#irParaHoje"/>
-            </HBox>
-            <StackPane fx:id="areaCalendario" styleClass="calendario" prefHeight="400" minHeight="380">
-                <GridPane fx:id="gradeDias" hgap="4" vgap="4">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints/>
-                        <RowConstraints vgrow="ALWAYS"/>
-                        <RowConstraints vgrow="ALWAYS"/>
-                        <RowConstraints vgrow="ALWAYS"/>
-                        <RowConstraints vgrow="ALWAYS"/>
-                        <RowConstraints vgrow="ALWAYS"/>
-                        <RowConstraints vgrow="ALWAYS"/>
-                    </rowConstraints>
-                </GridPane>
-            </StackPane>
+            <StackPane fx:id="slotCalendario"/>
             <Accordion>
                 <panes>
                     <TitledPane fx:id="painelNovaConsulta" text="Nova Consulta">

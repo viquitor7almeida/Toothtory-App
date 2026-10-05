@@ -1,28 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox styleClass="tela" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.DashboardController">
-    <Label text="Dashboard" styleClass="titulo-pagina"/>
-    <HBox spacing="16">
-        <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
-            <Label text="PACIENTES" styleClass="card-rotulo"/>
-            <Label fx:id="totalPacientesLabel" text="0" styleClass="card-valor"/>
+<ScrollPane styleClass="scroll-tela" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.DashboardController">
+    <content>
+        <VBox styleClass="tela">
+            <Label text="Dashboard" styleClass="titulo-pagina"/>
+            <HBox spacing="16">
+                <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                    <Label text="PACIENTES" styleClass="card-rotulo"/>
+                    <Label fx:id="totalPacientesLabel" text="0" styleClass="card-valor"/>
+                </VBox>
+                <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                    <Label text="PROCEDIMENTOS" styleClass="card-rotulo"/>
+                    <Label fx:id="totalProcedimentosLabel" text="0" styleClass="card-valor-rosa"/>
+                </VBox>
+                <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                    <Label text="CONSULTAS" styleClass="card-rotulo"/>
+                    <Label fx:id="totalConsultasLabel" text="0" styleClass="card-valor"/>
+                </VBox>
+                <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                    <Label text="FATURAMENTO DO MÊS" styleClass="card-rotulo"/>
+                    <Label fx:id="faturamentoMesLabel" text="R$ 0,00" styleClass="card-valor-dourado"/>
+                </VBox>
+                <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                    <Label text="LUCRO DO MÊS" styleClass="card-rotulo"/>
+                    <Label fx:id="lucroMesLabel" text="R$ 0,00" styleClass="card-valor-verde"/>
+                </VBox>
+            </HBox>
+            <StackPane fx:id="slotCalendario"/>
         </VBox>
-        <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
-            <Label text="PROCEDIMENTOS" styleClass="card-rotulo"/>
-            <Label fx:id="totalProcedimentosLabel" text="0" styleClass="card-valor-rosa"/>
-        </VBox>
-        <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
-            <Label text="CONSULTAS" styleClass="card-rotulo"/>
-            <Label fx:id="totalConsultasLabel" text="0" styleClass="card-valor"/>
-        </VBox>
-        <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
-            <Label text="FATURAMENTO DO MÊS" styleClass="card-rotulo"/>
-            <Label fx:id="faturamentoMesLabel" text="R$ 0,00" styleClass="card-valor-dourado"/>
-        </VBox>
-        <VBox styleClass="card-metrica" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
-            <Label text="LUCRO DO MÊS" styleClass="card-rotulo"/>
-            <Label fx:id="lucroMesLabel" text="R$ 0,00" styleClass="card-valor-verde"/>
-        </VBox>
-    </HBox>
-</VBox>
+    </content>
+</ScrollPane>

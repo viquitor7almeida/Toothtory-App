@@ -1,6 +1,7 @@
 package com.toothtory.controllers;
 
 import com.toothtory.components.Alerta;
+import com.toothtory.components.Calendario;
 import com.toothtory.components.Notificacao;
 import com.toothtory.services.ConsultaService;
 import com.toothtory.services.PacienteService;
@@ -8,49 +9,28 @@ import com.toothtory.services.ProcedimentoService;
 import com.toothtory.domain.entities.Consulta;
 import com.toothtory.domain.entities.Paciente;
 import com.toothtory.domain.entities.Procedimento;
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-public class ConsultaController {
+public class ConsultaController implements Calendario.Acoes {
 
     private static final Locale PT_BR = new Locale("pt", "BR");
-    private static final NumberFormat FORMATO_MOEDA = NumberFormat.getCurrencyInstance(PT_BR);
-    private static final String[] DIAS_SEMANA = {"DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"};
 
-    @FXML private Label labelMesAno;
-    @FXML private StackPane areaCalendario;
-    @FXML private GridPane gradeDias;
-    @FXML private TitledPane painelNovaConsulta;
+    @FXML private StackPane slotCalendario;
     @FXML private ScrollPane scrollTela;
+    @FXML private TitledPane painelNovaConsulta;
     @FXML private ComboBox<Paciente> comboPaciente;
     @FXML private ComboBox<Procedimento> comboProcedimento;
     @FXML private DatePicker datePicker;
@@ -67,11 +47,8 @@ public class ConsultaController {
     private final ProcedimentoService procedimentoService = new ProcedimentoService();
     private final ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
     private final ObservableList<Procedimento> procedimentosList = FXCollections.observableArrayList();
-    private final Map<LocalDate, List<Consulta>> consultasDoMes = new HashMap<>();
-    private final PauseTransition atrasoFecharOverlay = new PauseTransition(Duration.millis(250));
 
-    private YearMonth mesAtual = YearMonth.now();
-    private VBox overlayAtual;
+    private Calendario calendario;
     private Long idEditando = null;
 
     @FXML
@@ -80,8 +57,26 @@ public class ConsultaController {
         configurarToggleGroup();
         configurarStringConverterPaciente();
         configurarStringConverterProcedimento();
-        configurarFechamentoOverlay();
-        atualizarCalendario();
+        calendario = new Calendario(this);
+        slotCalendario.getChildren().add(calendario);
+    }
+
+    @Override
+    public void aoClicarDiaVazio(LocalDate dia) {
+        String dataTexto = dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        if (Alerta.confirmar("Nova consulta", "Quer marcar uma nova consulta em " + dataTexto + "?")) {
+            abrirFormularioNovoConsulta(dia);
+        }
+    }
+
+    @Override
+    public void aoAgendarDireto(LocalDate dia) {
+        abrirFormularioNovoConsulta(dia);
+    }
+
+    @Override
+    public void aoSelecionarConsulta(Consulta consulta) {
+        carregarConsultaNoFormulario(consulta);
     }
 
     private void carregarComboBoxes() {
@@ -138,207 +133,12 @@ public class ConsultaController {
         });
     }
 
-    private void atualizarCalendario() {
-        List<Consulta> consultas = consultaService.buscarPorPeriodo(
-                mesAtual.atDay(1).atStartOfDay(),
-                mesAtual.atEndOfMonth().atTime(23, 59, 59));
-
-        consultasDoMes.clear();
-        for (Consulta c : consultas) {
-            consultasDoMes.computeIfAbsent(c.getDataHora().toLocalDate(), k -> new ArrayList<>()).add(c);
-        }
-        for (List<Consulta> lista : consultasDoMes.values()) {
-            lista.sort(Comparator.comparing(Consulta::getDataHora));
-        }
-
-        labelMesAno.setText(capitalizar(mesAtual.format(DateTimeFormatter.ofPattern("MMMM yyyy", PT_BR))));
-        montarGrade();
-    }
-
-    private void montarGrade() {
-        gradeDias.getChildren().clear();
-
-        for (int i = 0; i < 7; i++) {
-            Label diaSemana = new Label(DIAS_SEMANA[i]);
-            diaSemana.getStyleClass().add("calendario-semana");
-            diaSemana.setMaxWidth(Double.MAX_VALUE);
-            diaSemana.setAlignment(Pos.CENTER);
-            gradeDias.add(diaSemana, i, 0);
-        }
-
-        int deslocamento = mesAtual.atDay(1).getDayOfWeek().getValue() % 7;
-        LocalDate primeiroDia = mesAtual.atDay(1).minusDays(deslocamento);
-
-        for (int i = 0; i < 42; i++) {
-            LocalDate data = primeiroDia.plusDays(i);
-            gradeDias.add(criarCelula(data), i % 7, 1 + i / 7);
-        }
-    }
-
-    private VBox criarCelula(LocalDate data) {
-        VBox celula = new VBox();
-        celula.getStyleClass().add("calendario-dia");
-
-        Label numero = new Label(String.valueOf(data.getDayOfMonth()));
-        numero.getStyleClass().add("calendario-dia-numero");
-        if (data.equals(LocalDate.now())) {
-            numero.getStyleClass().add("calendario-hoje-numero");
-        }
-        celula.getChildren().add(numero);
-
-        boolean temConsultas = consultasDoMes.containsKey(data);
-        if (temConsultas) {
-            Region espacador = new Region();
-            VBox.setVgrow(espacador, Priority.ALWAYS);
-            Region bolinha = new Region();
-            bolinha.getStyleClass().add("calendario-bolinha");
-            bolinha.setMinSize(6, 6);
-            bolinha.setMaxSize(6, 6);
-            HBox linhaBolinha = new HBox();
-            linhaBolinha.setAlignment(Pos.CENTER);
-            linhaBolinha.getChildren().add(bolinha);
-            celula.getChildren().addAll(espacador, linhaBolinha);
-        }
-
-        if (data.getMonth() != mesAtual.getMonth()) {
-            celula.getStyleClass().add("calendario-dia-outro-mes");
-            return celula;
-        }
-
-        celula.setOnMouseClicked(evento -> {
-            evento.consume();
-            aoClicarDia(data, temConsultas, celula);
-        });
-        return celula;
-    }
-
-    private void aoClicarDia(LocalDate data, boolean temConsultas, Node celula) {
-        fecharOverlay();
-
-        if (!temConsultas) {
-            String dataTexto = data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            if (Alerta.confirmar("Nova consulta", "Quer marcar uma nova consulta em " + dataTexto + "?")) {
-                abrirFormularioNovoConsulta(data);
-            }
-            return;
-        }
-
-        mostrarOverlayDia(data, celula);
-    }
-
-    @FXML
-    private void mesAnterior() {
-        mesAtual = mesAtual.minusMonths(1);
-        fecharOverlay();
-        atualizarCalendario();
-    }
-
-    @FXML
-    private void mesSeguinte() {
-        mesAtual = mesAtual.plusMonths(1);
-        fecharOverlay();
-        atualizarCalendario();
-    }
-
-    @FXML
-    private void irParaHoje() {
-        mesAtual = YearMonth.now();
-        fecharOverlay();
-        atualizarCalendario();
-    }
-
     private void abrirFormularioNovoConsulta(LocalDate data) {
         limparFormulario();
         datePicker.setValue(data);
         painelNovaConsulta.setExpanded(true);
         rolarAteFormulario();
         comboPaciente.requestFocus();
-    }
-
-    private void mostrarOverlayDia(LocalDate dia, Node celula) {
-        fecharOverlay();
-
-        VBox overlay = new VBox();
-        overlay.getStyleClass().add("calendario-hover");
-        overlay.setManaged(false);
-        overlay.setMinWidth(320);
-        overlay.setPrefWidth(320);
-        overlay.setMaxWidth(320);
-
-        Label titulo = new Label("Consultas de " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        titulo.getStyleClass().add("calendario-hover-titulo");
-        titulo.setMaxWidth(Double.MAX_VALUE);
-        overlay.getChildren().add(titulo);
-
-        for (Consulta c : consultasDoMes.getOrDefault(dia, List.of())) {
-            VBox item = new VBox();
-            item.getStyleClass().add("calendario-hover-item");
-
-            Label linha1 = new Label(c.getDataHora().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
-                    + " · " + nomePaciente(c.getPacienteId()));
-            linha1.getStyleClass().add("calendario-hover-item-linha1");
-
-            Label linha2 = new Label(c.getNomeProcedimento() + " · " + FORMATO_MOEDA.format(c.getValorProcedimento()));
-            linha2.getStyleClass().add("calendario-hover-item-linha2");
-
-            item.getChildren().addAll(linha1, linha2);
-            item.setOnMouseClicked(evento -> {
-                evento.consume();
-                fecharOverlay();
-                carregarConsultaNoFormulario(c);
-            });
-            overlay.getChildren().add(item);
-        }
-
-        Button nova = new Button("Nova consulta neste dia");
-        nova.getStyleClass().add("button-primario");
-        nova.setMaxWidth(Double.MAX_VALUE);
-        nova.setOnAction(evento -> {
-            fecharOverlay();
-            abrirFormularioNovoConsulta(dia);
-        });
-        overlay.getChildren().add(nova);
-
-        overlay.setOnMouseEntered(evento -> atrasoFecharOverlay.stop());
-        overlay.setOnMouseExited(evento -> atrasoFecharOverlay.playFromStart());
-        overlay.setOnMouseClicked(evento -> evento.consume());
-
-        areaCalendario.getChildren().add(overlay);
-        overlay.applyCss();
-        overlay.autosize();
-        overlay.layout();
-
-        Bounds limitesCelula = celula.localToScene(celula.getBoundsInLocal());
-        Bounds limitesArea = areaCalendario.localToScene(areaCalendario.getBoundsInLocal());
-
-        double x = limitesCelula.getMaxX() - limitesArea.getMinX() + 8;
-        double y = limitesCelula.getMinY() - limitesArea.getMinY();
-
-        if (x + overlay.getWidth() > areaCalendario.getWidth() - 6) {
-            x = limitesCelula.getMinX() - limitesArea.getMinX() - overlay.getWidth() - 8;
-        }
-        if (y + overlay.getHeight() > areaCalendario.getHeight() - 6) {
-            y = areaCalendario.getHeight() - overlay.getHeight() - 6;
-        }
-        if (x < 6) x = 6;
-        if (y < 6) y = 6;
-
-        overlay.setLayoutX(x);
-        overlay.setLayoutY(y);
-        overlayAtual = overlay;
-    }
-
-    private void configurarFechamentoOverlay() {
-        atrasoFecharOverlay.setOnFinished(evento -> fecharOverlay());
-        areaCalendario.addEventHandler(MouseEvent.MOUSE_CLICKED, evento -> fecharOverlay());
-    }
-
-    private void fecharOverlay() {
-        atrasoFecharOverlay.stop();
-        if (overlayAtual != null) {
-            areaCalendario.getChildren().remove(overlayAtual);
-            overlayAtual = null;
-        }
     }
 
     private void carregarConsultaNoFormulario(Consulta c) {
@@ -417,11 +217,7 @@ public class ConsultaController {
                 }
             }
             limparFormulario();
-            fecharOverlay();
-            if (!YearMonth.from(dataHora).equals(mesAtual)) {
-                mesAtual = YearMonth.from(dataHora);
-            }
-            atualizarCalendario();
+            calendario.irParaMes(YearMonth.from(dataHora));
             Notificacao.sucesso("Consulta registrada.");
         } catch (Exception e) {
             Notificacao.erro(e.getMessage());
@@ -451,8 +247,7 @@ public class ConsultaController {
             consultaService.excluir(idEditando);
             idEditando = null;
             limparFormulario();
-            fecharOverlay();
-            atualizarCalendario();
+            calendario.atualizar();
         }
     }
 
@@ -463,14 +258,5 @@ public class ConsultaController {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Informe um valor numérico válido");
         }
-    }
-
-    private String nomePaciente(Long pacienteId) {
-        Paciente p = pacienteService.findById(pacienteId).orElse(null);
-        return p == null ? "Paciente removido" : p.getNome();
-    }
-
-    private String capitalizar(String texto) {
-        return texto.substring(0, 1).toUpperCase() + texto.substring(1);
     }
 }
