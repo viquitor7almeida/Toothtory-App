@@ -86,16 +86,18 @@ public class ConsultaController {
         rbProcedimentoExistente.setToggleGroup(grupoProcedimento);
         rbProcedimentoManual.setToggleGroup(grupoProcedimento);
         rbProcedimentoExistente.setSelected(true);
-        comboProcedimento.setDisable(false);
-        txtNomeProcedimentoManual.setDisable(true);
-        txtValorManual.setDisable(true);
+        atualizarCamposProcedimento(false);
 
         grupoProcedimento.selectedToggleProperty().addListener((obs, old, novo) -> {
             boolean manual = novo == rbProcedimentoManual;
-            comboProcedimento.setDisable(!manual);
-            txtNomeProcedimentoManual.setDisable(!manual);
-            txtValorManual.setDisable(!manual);
+            atualizarCamposProcedimento(manual);
         });
+    }
+
+    private void atualizarCamposProcedimento(boolean manual) {
+        comboProcedimento.setDisable(manual);
+        txtNomeProcedimentoManual.setDisable(!manual);
+        txtValorManual.setDisable(!manual);
     }
 
     private void configurarStringConverterPaciente() {
