@@ -43,5 +43,8 @@ public class PacienteService {
         if (paciente.getNome() == null || paciente.getNome().trim().isEmpty()) {
             throw new IllegalArgumentException("Nome é obrigatório");
         }
+        if (paciente.getCpf() == null || paciente.getCpf().trim().isEmpty()) {
+            throw new IllegalArgumentException("CPF é obrigatório");
+        }
     }
 }

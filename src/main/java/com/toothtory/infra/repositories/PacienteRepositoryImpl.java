@@ -13,15 +13,16 @@ import java.util.Optional;
 public class PacienteRepositoryImpl implements PacienteRepository {
     @Override
     public void save(Paciente paciente) {
-        String sql = "INSERT INTO pacientes (nome, endereco, email, celular, dataCriacao, dataAtualizacao) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO pacientes (nome, cpf, endereco, email, celular, dataCriacao, dataAtualizacao) VALUES (?,?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, paciente.getNome());
-            stmt.setString(2, paciente.getEndereco());
-            stmt.setString(3, paciente.getEmail());
-            stmt.setString(4, paciente.getCelular());
-            stmt.setString(5, paciente.getDataCriacao().toString());
-            stmt.setString(6, paciente.getDataAtualizacao().toString());
+            stmt.setString(2, paciente.getCpf());
+            stmt.setString(3, paciente.getEndereco());
+            stmt.setString(4, paciente.getEmail());
+            stmt.setString(5, paciente.getCelular());
+            stmt.setString(6, paciente.getDataCriacao().toString());
+            stmt.setString(7, paciente.getDataAtualizacao().toString());
             stmt.executeUpdate();
             try (Statement keysStmt = conn.createStatement();
                  ResultSet rs = keysStmt.executeQuery("SELECT last_insert_rowid()")) {
@@ -36,15 +37,16 @@ public class PacienteRepositoryImpl implements PacienteRepository {
 
     @Override
     public void update(Paciente paciente) {
-        String sql = "UPDATE pacientes SET nome=?, endereco=?, email=?, celular=?, dataAtualizacao=? WHERE id=?";
+        String sql = "UPDATE pacientes SET nome=?, cpf=?, endereco=?, email=?, celular=?, dataAtualizacao=? WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, paciente.getNome());
-            stmt.setString(2, paciente.getEndereco());
-            stmt.setString(3, paciente.getEmail());
-            stmt.setString(4, paciente.getCelular());
-            stmt.setString(5, LocalDateTime.now().toString());
-            stmt.setLong(6, paciente.getId());
+            stmt.setString(2, paciente.getCpf());
+            stmt.setString(3, paciente.getEndereco());
+            stmt.setString(4, paciente.getEmail());
+            stmt.setString(5, paciente.getCelular());
+            stmt.setString(6, LocalDateTime.now().toString());
+            stmt.setLong(7, paciente.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -116,6 +118,7 @@ public class PacienteRepositoryImpl implements PacienteRepository {
         Paciente p = new Paciente();
         p.setId(rs.getLong("id"));
         p.setNome(rs.getString("nome"));
+        p.setCpf(rs.getString("cpf"));
         p.setEndereco(rs.getString("endereco"));
         p.setEmail(rs.getString("email"));
         p.setCelular(rs.getString("celular"));

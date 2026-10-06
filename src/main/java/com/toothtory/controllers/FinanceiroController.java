@@ -96,8 +96,8 @@ public class FinanceiroController {
 
         colGastoNome.prefWidthProperty().bind(tabelaGastos.widthProperty()
                 .subtract(20)
-                .subtract(colGastoValor.widthProperty())
-                .subtract(colGastoData.widthProperty()));
+                .subtract(colGastoValor.prefWidthProperty())
+                .subtract(colGastoData.prefWidthProperty()));
         colGastoNome.setResizable(false);
 
         tabelaGastos.setItems(gastosList);

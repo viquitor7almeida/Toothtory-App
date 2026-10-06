@@ -12,9 +12,6 @@ public class TopBar extends HBox {
         setAlignment(Pos.CENTER_LEFT);
         getStyleClass().add("topbar");
 
-        Label wordmark = new Label("Toothtory");
-        wordmark.getStyleClass().add("wordmark");
-
         Region espaco = new Region();
         HBox.setHgrow(espaco, Priority.ALWAYS);
 
@@ -29,6 +26,6 @@ public class TopBar extends HBox {
         nome.getStyleClass().add("chip-nome");
         chip.getChildren().addAll(avatar, nome);
 
-        getChildren().addAll(wordmark, espaco, chip);
+        getChildren().addAll(espaco, chip);
     }
 }

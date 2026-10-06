@@ -16,10 +16,13 @@ public class PacienteController {
     @FXML private VBox telaPacientes;
     @FXML private TableView<Paciente> tabelaPacientes;
     @FXML private TableColumn<Paciente, String> colNome;
+    @FXML private TableColumn<Paciente, String> colEndereco;
+    @FXML private TableColumn<Paciente, String> colCpf;
     @FXML private TableColumn<Paciente, String> colEmail;
     @FXML private TableColumn<Paciente, String> colCelular;
     @FXML private TextField txtBusca;
     @FXML private TextField txtNome;
+    @FXML private TextField txtCpf;
     @FXML private TextField txtEndereco;
     @FXML private TextField txtEmail;
     @FXML private TextField txtCelular;
@@ -47,13 +50,17 @@ public class PacienteController {
 
     private void configurarColunas() {
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colEndereco.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+        colCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colCelular.setCellValueFactory(new PropertyValueFactory<>("celular"));
 
         colNome.prefWidthProperty().bind(tabelaPacientes.widthProperty()
                 .subtract(20)
-                .subtract(colEmail.widthProperty())
-                .subtract(colCelular.widthProperty()));
+                .subtract(colEndereco.prefWidthProperty())
+                .subtract(colCpf.prefWidthProperty())
+                .subtract(colEmail.prefWidthProperty())
+                .subtract(colCelular.prefWidthProperty()));
         colNome.setResizable(false);
 
         tabelaPacientes.setItems(pacientesList);
@@ -76,6 +83,7 @@ public class PacienteController {
     @FXML
     private void limparFormulario() {
         txtNome.clear();
+        txtCpf.clear();
         txtEndereco.clear();
         txtEmail.clear();
         txtCelular.clear();
@@ -93,6 +101,7 @@ public class PacienteController {
                 p = new Paciente();
             }
             p.setNome(txtNome.getText());
+            p.setCpf(txtCpf.getText());
             p.setEndereco(txtEndereco.getText());
             p.setEmail(txtEmail.getText());
             p.setCelular(txtCelular.getText());
@@ -113,6 +122,7 @@ public class PacienteController {
             return;
         }
         txtNome.setText(selecionado.getNome());
+        txtCpf.setText(selecionado.getCpf());
         txtEndereco.setText(selecionado.getEndereco());
         txtEmail.setText(selecionado.getEmail());
         txtCelular.setText(selecionado.getCelular());
