@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane fx:id="scrollTela" styleClass="scroll-tela" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.FichaController">
+    <content>
+        <VBox fx:id="telaFicha" styleClass="tela">
+            <Label text="Ficha" styleClass="titulo-pagina"/>
+            <HBox spacing="10">
+                <TextField fx:id="txtBusca" promptText="Buscar paciente por nome..." HBox.hgrow="ALWAYS"/>
+                <Button text="Buscar" styleClass="button-primario" onAction="#buscarPacientes"/>
+            </HBox>
+            <TableView fx:id="tabelaPacientes" prefHeight="240">
+                <columns>
+                    <TableColumn fx:id="colNome" text="NOME"/>
+                    <TableColumn fx:id="colCpf" text="CPF" prefWidth="140"/>
+                    <TableColumn fx:id="colCelular" text="CELULAR" prefWidth="140"/>
+                </columns>
+            </TableView>
+            <Accordion VBox.vgrow="ALWAYS">
+                <panes>
+                    <TitledPane fx:id="painelFicha" text="Ficha">
+                        <VBox spacing="12">
+                            <Label fx:id="labelPaciente" text="Clique em um paciente acima para ver a ficha" styleClass="titulo-secao"/>
+                            <VBox fx:id="containerFicha" spacing="12"/>
+                        </VBox>
+                    </TitledPane>
+                </panes>
+            </Accordion>
+        </VBox>
+    </content>
+</ScrollPane>

@@ -4,7 +4,9 @@ import com.toothtory.domain.entities.Anamnese;
 import com.toothtory.domain.repositories.AnamneseRepository;
 import com.toothtory.infra.repositories.AnamneseRepositoryImpl;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class AnamneseService {
     private final AnamneseRepository repository;
@@ -27,5 +29,13 @@ public class AnamneseService {
 
     public Optional<Anamnese> buscarPorPaciente(Long pacienteId) {
         return repository.findByPacienteId(pacienteId);
+    }
+
+    public Set<Long> pacientesComAnamnese() {
+        Set<Long> ids = new HashSet<>();
+        for (Anamnese anamnese : repository.findAll()) {
+            ids.add(anamnese.getPacienteId());
+        }
+        return ids;
     }
 }

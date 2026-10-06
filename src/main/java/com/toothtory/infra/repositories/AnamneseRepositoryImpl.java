@@ -6,6 +6,8 @@ import com.toothtory.infra.database.DatabaseConnection;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AnamneseRepositoryImpl implements AnamneseRepository {
@@ -66,6 +68,22 @@ public class AnamneseRepositoryImpl implements AnamneseRepository {
             e.printStackTrace();
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<Anamnese> findAll() {
+        List<Anamnese> anamneses = new ArrayList<>();
+        String sql = "SELECT * FROM anamnese";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                anamneses.add(extractAnamnese(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return anamneses;
     }
 
     private Anamnese extractAnamnese(ResultSet rs) throws SQLException {
