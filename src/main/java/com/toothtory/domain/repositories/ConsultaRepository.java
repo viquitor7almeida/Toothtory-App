@@ -14,4 +14,5 @@ public interface ConsultaRepository {
     List<Consulta> findByPacienteId(Long pacienteId);
     List<Consulta> findByPeriodo(LocalDateTime inicio, LocalDateTime fim);
     double somaValorPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+    List<Integer> findAnosComRegistros();
 }

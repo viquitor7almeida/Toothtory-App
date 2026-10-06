@@ -1,6 +1,7 @@
 package com.toothtory.controllers;
 
 import com.toothtory.components.Alerta;
+import com.toothtory.components.Calendario;
 import com.toothtory.components.Notificacao;
 import com.toothtory.services.ConsultaService;
 import com.toothtory.services.PacienteService;
@@ -8,26 +9,28 @@ import com.toothtory.services.ProcedimentoService;
 import com.toothtory.domain.entities.Consulta;
 import com.toothtory.domain.entities.Paciente;
 import com.toothtory.domain.entities.Procedimento;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-public class ConsultaController {
-    @FXML private TableView<Consulta> tabelaConsultas;
-    @FXML private TableColumn<Consulta, Long> colId;
-    @FXML private TableColumn<Consulta, String> colPaciente;
-    @FXML private TableColumn<Consulta, String> colProcedimento;
-    @FXML private TableColumn<Consulta, String> colObservacoes;
-    @FXML private TableColumn<Consulta, Double> colValor;
-    @FXML private TableColumn<Consulta, LocalDateTime> colDataHora;
+public class ConsultaController implements Calendario.Acoes {
+
+    private static final Locale PT_BR = new Locale("pt", "BR");
+
+    @FXML private StackPane slotCalendario;
+    @FXML private ScrollPane scrollTela;
+    @FXML private TitledPane painelNovaConsulta;
     @FXML private ComboBox<Paciente> comboPaciente;
     @FXML private ComboBox<Procedimento> comboProcedimento;
     @FXML private DatePicker datePicker;
@@ -42,36 +45,38 @@ public class ConsultaController {
     private final ConsultaService consultaService = new ConsultaService();
     private final PacienteService pacienteService = new PacienteService();
     private final ProcedimentoService procedimentoService = new ProcedimentoService();
-    private ObservableList<Consulta> consultasList = FXCollections.observableArrayList();
-    private ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
-    private ObservableList<Procedimento> procedimentosList = FXCollections.observableArrayList();
+    private final ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
+    private final ObservableList<Procedimento> procedimentosList = FXCollections.observableArrayList();
+
+    private Calendario calendario;
     private Long idEditando = null;
 
     @FXML
     public void initialize() {
-        configurarColunas();
         carregarComboBoxes();
-        tabelaConsultas.setPlaceholder(rotuloVazio("Nenhuma consulta registrada"));
-        carregarConsultas();
         configurarToggleGroup();
         configurarStringConverterPaciente();
         configurarStringConverterProcedimento();
+        calendario = new Calendario(this);
+        slotCalendario.getChildren().add(calendario);
     }
 
-    private void configurarColunas() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colDataHora.setCellValueFactory(new PropertyValueFactory<>("dataHora"));
-        colProcedimento.setCellValueFactory(new PropertyValueFactory<>("nomeProcedimento"));
-        colValor.setCellValueFactory(new PropertyValueFactory<>("valorProcedimento"));
-        colObservacoes.setCellValueFactory(new PropertyValueFactory<>("observacoes"));
+    @Override
+    public void aoClicarDiaVazio(LocalDate dia) {
+        String dataTexto = dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        if (Alerta.confirmar("Nova consulta", "Quer marcar uma nova consulta em " + dataTexto + "?")) {
+            abrirFormularioNovoConsulta(dia);
+        }
+    }
 
-        colPaciente.setCellValueFactory(cellData -> {
-            Long pacienteId = cellData.getValue().getPacienteId();
-            Paciente p = pacienteService.findById(pacienteId).orElse(null);
-            return new SimpleStringProperty(p == null ? "" : p.getNome());
-        });
+    @Override
+    public void aoAgendarDireto(LocalDate dia) {
+        abrirFormularioNovoConsulta(dia);
+    }
 
-        tabelaConsultas.setItems(consultasList);
+    @Override
+    public void aoSelecionarConsulta(Consulta consulta) {
+        carregarConsultaNoFormulario(consulta);
     }
 
     private void carregarComboBoxes() {
@@ -86,16 +91,18 @@ public class ConsultaController {
         rbProcedimentoExistente.setToggleGroup(grupoProcedimento);
         rbProcedimentoManual.setToggleGroup(grupoProcedimento);
         rbProcedimentoExistente.setSelected(true);
-        comboProcedimento.setDisable(false);
-        txtNomeProcedimentoManual.setDisable(true);
-        txtValorManual.setDisable(true);
+        atualizarCamposProcedimento(false);
 
         grupoProcedimento.selectedToggleProperty().addListener((obs, old, novo) -> {
             boolean manual = novo == rbProcedimentoManual;
-            comboProcedimento.setDisable(!manual);
-            txtNomeProcedimentoManual.setDisable(!manual);
-            txtValorManual.setDisable(!manual);
+            atualizarCamposProcedimento(manual);
         });
+    }
+
+    private void atualizarCamposProcedimento(boolean manual) {
+        comboProcedimento.setDisable(manual);
+        txtNomeProcedimentoManual.setDisable(!manual);
+        txtValorManual.setDisable(!manual);
     }
 
     private void configurarStringConverterPaciente() {
@@ -126,8 +133,44 @@ public class ConsultaController {
         });
     }
 
-    private void carregarConsultas() {
-        consultasList.setAll(consultaService.listarTodas());
+    private void abrirFormularioNovoConsulta(LocalDate data) {
+        limparFormulario();
+        datePicker.setValue(data);
+        painelNovaConsulta.setExpanded(true);
+        rolarAteFormulario();
+        comboPaciente.requestFocus();
+    }
+
+    private void carregarConsultaNoFormulario(Consulta c) {
+        Paciente p = pacienteService.findById(c.getPacienteId()).orElse(null);
+        if (p != null) comboPaciente.getSelectionModel().select(p);
+        datePicker.setValue(c.getDataHora().toLocalDate());
+        txtHora.setText(c.getDataHora().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        txtObservacoes.setText(c.getObservacoes());
+        idEditando = c.getId();
+
+        boolean manual = true;
+        for (Procedimento proc : procedimentosList) {
+            if (proc.getNome().equals(c.getNomeProcedimento()) && proc.getValor() == c.getValorProcedimento()) {
+                comboProcedimento.getSelectionModel().select(proc);
+                manual = false;
+                break;
+            }
+        }
+        if (manual) {
+            rbProcedimentoManual.setSelected(true);
+            txtNomeProcedimentoManual.setText(c.getNomeProcedimento());
+            txtValorManual.setText(String.format(PT_BR, "%.2f", c.getValorProcedimento()));
+        } else {
+            rbProcedimentoExistente.setSelected(true);
+        }
+
+        painelNovaConsulta.setExpanded(true);
+        rolarAteFormulario();
+    }
+
+    private void rolarAteFormulario() {
+        Platform.runLater(() -> scrollTela.setVvalue(1.0));
     }
 
     @FXML
@@ -155,7 +198,7 @@ public class ConsultaController {
                 } else {
                     String nomeProc = txtNomeProcedimentoManual.getText();
                     if (nomeProc == null || nomeProc.trim().isEmpty()) throw new IllegalArgumentException("Informe o nome do procedimento");
-                    double valor = Double.parseDouble(txtValorManual.getText());
+                    double valor = lerValor(txtValorManual.getText());
                     c.setNomeProcedimento(nomeProc);
                     c.setValorProcedimento(valor);
                 }
@@ -169,12 +212,12 @@ public class ConsultaController {
                 } else {
                     String nomeProc = txtNomeProcedimentoManual.getText();
                     if (nomeProc == null || nomeProc.trim().isEmpty()) throw new IllegalArgumentException("Informe o nome do procedimento");
-                    double valor = Double.parseDouble(txtValorManual.getText());
+                    double valor = lerValor(txtValorManual.getText());
                     consultaService.registrarConsultaComProcedimentoManual(paciente.getId(), dataHora, nomeProc, valor, observacoes);
                 }
             }
             limparFormulario();
-            carregarConsultas();
+            calendario.irParaMes(YearMonth.from(dataHora));
             Notificacao.sucesso("Consulta registrada.");
         } catch (Exception e) {
             Notificacao.erro(e.getMessage());
@@ -195,53 +238,25 @@ public class ConsultaController {
     }
 
     @FXML
-    private void editarConsulta() {
-        Consulta sel = tabelaConsultas.getSelectionModel().getSelectedItem();
-        if (sel == null) {
-            Notificacao.aviso("Selecione uma consulta.");
-            return;
-        }
-        Paciente p = pacienteService.findById(sel.getPacienteId()).orElse(null);
-        if (p != null) comboPaciente.getSelectionModel().select(p);
-        datePicker.setValue(sel.getDataHora().toLocalDate());
-        txtHora.setText(sel.getDataHora().toLocalTime().toString());
-        txtObservacoes.setText(sel.getObservacoes());
-        idEditando = sel.getId();
-
-        boolean manual = true;
-        for (Procedimento proc : procedimentosList) {
-            if (proc.getNome().equals(sel.getNomeProcedimento()) && proc.getValor() == sel.getValorProcedimento()) {
-                comboProcedimento.getSelectionModel().select(proc);
-                manual = false;
-                break;
-            }
-        }
-        if (manual) {
-            rbProcedimentoManual.setSelected(true);
-            txtNomeProcedimentoManual.setText(sel.getNomeProcedimento());
-            txtValorManual.setText(String.valueOf(sel.getValorProcedimento()));
-        } else {
-            rbProcedimentoExistente.setSelected(true);
-        }
-    }
-
-    @FXML
     private void excluirConsulta() {
-        Consulta sel = tabelaConsultas.getSelectionModel().getSelectedItem();
-        if (sel == null) {
-            Notificacao.aviso("Selecione uma consulta.");
+        if (idEditando == null) {
+            Notificacao.aviso("Clique em um dia com consulta e depois na consulta para carregá-la.");
             return;
         }
         if (Alerta.confirmar("Confirmar exclusão", "Excluir consulta?")) {
-            consultaService.excluir(sel.getId());
-            carregarConsultas();
+            consultaService.excluir(idEditando);
+            idEditando = null;
             limparFormulario();
+            calendario.atualizar();
         }
     }
 
-    private Label rotuloVazio(String texto) {
-        Label rotulo = new Label(texto);
-        rotulo.getStyleClass().add("tabela-vazia");
-        return rotulo;
+    private double lerValor(String texto) {
+        if (texto == null || texto.trim().isEmpty()) throw new IllegalArgumentException("Informe o valor do procedimento");
+        try {
+            return Double.parseDouble(texto.trim().replace(",", "."));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Informe um valor numérico válido");
+        }
     }
 }

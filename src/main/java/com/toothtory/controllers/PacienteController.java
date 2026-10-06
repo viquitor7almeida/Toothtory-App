@@ -9,10 +9,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 
 public class PacienteController {
+    @FXML private ScrollPane scrollTela;
+    @FXML private VBox telaPacientes;
     @FXML private TableView<Paciente> tabelaPacientes;
-    @FXML private TableColumn<Paciente, Long> colId;
     @FXML private TableColumn<Paciente, String> colNome;
     @FXML private TableColumn<Paciente, String> colEmail;
     @FXML private TableColumn<Paciente, String> colCelular;
@@ -28,17 +30,32 @@ public class PacienteController {
 
     @FXML
     public void initialize() {
+        configurarScrollTela();
         configurarColunas();
         tabelaPacientes.setPlaceholder(rotuloVazio("Nenhum paciente cadastrado"));
         carregarPacientes();
         txtBusca.textProperty().addListener((obs, old, novo) -> buscarPacientes());
     }
 
+    private void configurarScrollTela() {
+        scrollTela.viewportBoundsProperty().addListener((obs, antigo, limites) -> {
+            if (limites != null) {
+                telaPacientes.setMinHeight(limites.getHeight());
+            }
+        });
+    }
+
     private void configurarColunas() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colCelular.setCellValueFactory(new PropertyValueFactory<>("celular"));
+
+        colNome.prefWidthProperty().bind(tabelaPacientes.widthProperty()
+                .subtract(20)
+                .subtract(colEmail.widthProperty())
+                .subtract(colCelular.widthProperty()));
+        colNome.setResizable(false);
+
         tabelaPacientes.setItems(pacientesList);
     }
 

@@ -127,6 +127,23 @@ public class GastoRepositoryImpl implements GastoRepository {
         return 0.0;
     }
 
+    @Override
+    public List<Integer> findAnosComRegistros() {
+        List<Integer> anos = new ArrayList<>();
+        String sql = "SELECT DISTINCT CAST(substr(data, 1, 4) AS INTEGER) FROM gastos "
+                + "ORDER BY CAST(substr(data, 1, 4) AS INTEGER) DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                anos.add(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return anos;
+    }
+
     private Gasto extractGasto(ResultSet rs) throws SQLException {
         Gasto g = new Gasto();
         g.setId(rs.getLong("id"));

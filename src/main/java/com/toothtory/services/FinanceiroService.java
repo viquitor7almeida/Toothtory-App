@@ -5,6 +5,7 @@ import com.toothtory.domain.entities.ResumoMensal;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,6 +30,22 @@ public class FinanceiroService {
             relatorio.add(resumoMensal(YearMonth.of(ano, mes)));
         }
         return relatorio;
+    }
+
+    public List<Integer> anosComRegistros() {
+        List<Integer> anos = new ArrayList<>();
+        for (Integer ano : consultaService.anosComRegistros()) {
+            if (!anos.contains(ano)) {
+                anos.add(ano);
+            }
+        }
+        for (Integer ano : gastoService.anosComRegistros()) {
+            if (!anos.contains(ano)) {
+                anos.add(ano);
+            }
+        }
+        anos.sort(Comparator.reverseOrder());
+        return anos;
     }
 
     public double lucroNoMes(YearMonth mes) {
