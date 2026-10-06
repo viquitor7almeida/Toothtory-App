@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane fx:id="scrollTela" styleClass="scroll-tela" fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.toothtory.controllers.AnamneseController">
+    <content>
+        <VBox fx:id="telaAnamnese" styleClass="tela">
+            <Label text="Anamnese" styleClass="titulo-pagina"/>
+            <TextField fx:id="txtBusca" promptText="Buscar paciente por nome..."/>
+            <ListView fx:id="listaPacientes" styleClass="lista-pacientes" prefHeight="220" VBox.vgrow="ALWAYS"/>
+            <Accordion>
+                <panes>
+                    <TitledPane fx:id="painelAnamnese" text="Anamnese">
+                        <VBox spacing="12">
+                            <Label fx:id="labelPaciente" text="Selecione um paciente na lista acima" styleClass="titulo-secao"/>
+                            <Label text="Tem diabetes?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbDiabetesSim" text="Sim"/>
+                                <RadioButton fx:id="rbDiabetesNao" text="Não"/>
+                            </HBox>
+                            <Label text="É hipertenso?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbHipertensoSim" text="Sim"/>
+                                <RadioButton fx:id="rbHipertensoNao" text="Não"/>
+                            </HBox>
+                            <Label text="Possui problemas no rim ou pâncreas?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbRimPancreasSim" text="Sim"/>
+                                <RadioButton fx:id="rbRimPancreasNao" text="Não"/>
+                            </HBox>
+                            <Label text="Possui problemas pulmonares?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbPulmonaresSim" text="Sim"/>
+                                <RadioButton fx:id="rbPulmonaresNao" text="Não"/>
+                            </HBox>
+                            <Label text="Observações" styleClass="rotulo-campo"/>
+                            <TextArea fx:id="txtObservacoes" prefHeight="70"/>
+                            <HBox spacing="10">
+                                <Button text="Salvar" styleClass="button-primario" onAction="#salvarAnamnese"/>
+                                <Button text="Limpar" onAction="#limparFormulario"/>
+                            </HBox>
+                        </VBox>
+                    </TitledPane>
+                </panes>
+            </Accordion>
+        </VBox>
+    </content>
+</ScrollPane>

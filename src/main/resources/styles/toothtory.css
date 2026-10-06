@@ -710,6 +710,42 @@
     -fx-background-color: -gelo;
 }
 
+.lista-pacientes {
+    -fx-background-color: -branco;
+    -fx-background-radius: 12;
+    -fx-border-color: -borda;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: -sombra-cardo;
+}
+
+.lista-pacientes .list-cell {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
+}
+
+.lista-pacientes .list-cell:filled:hover {
+    -fx-background-color: -rosa-suave;
+}
+
+.lista-pacientes .list-cell:filled:selected {
+    -fx-background-color: -dourado-suave;
+}
+
+.lista-item-nome {
+    -fx-font-family: "Inter Medium";
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -texto;
+}
+
+.lista-item-cpf {
+    -fx-font-family: "Inter";
+    -fx-font-size: 11.5px;
+    -fx-text-fill: -texto-suave;
+}
+
 .chart-hover-info {
     -fx-background-color: -branco;
     -fx-background-radius: 999px;

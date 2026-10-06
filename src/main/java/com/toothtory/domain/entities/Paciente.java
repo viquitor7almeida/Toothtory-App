@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class Paciente {
     private Long id;
     private String nome;
+    private String cpf;
     private String endereco;
     private String email;
     private String celular;
@@ -16,9 +17,10 @@ public class Paciente {
         this.dataAtualizacao = LocalDateTime.now();
     }
 
-    public Paciente(Long id, String nome, String endereco, String email, String celular, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+    public Paciente(Long id, String nome, String cpf, String endereco, String email, String celular, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.nome = nome;
+        this.cpf = cpf;
         this.endereco = endereco;
         this.email = email;
         this.celular = celular;
@@ -30,6 +32,8 @@ public class Paciente {
     public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
+    public String getCpf() { return cpf; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
     public String getEndereco() { return endereco; }
     public void setEndereco(String endereco) { this.endereco = endereco; }
     public String getEmail() { return email; }

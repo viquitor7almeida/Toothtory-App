@@ -40,7 +40,7 @@ public class ProcedimentoController {
 
         colNome.prefWidthProperty().bind(tabelaProcedimentos.widthProperty()
                 .subtract(20)
-                .subtract(colValor.widthProperty()));
+                .subtract(colValor.prefWidthProperty()));
         colNome.setResizable(false);
         formatarColunaMoeda(colValor);
 
