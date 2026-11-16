@@ -97,7 +97,6 @@ public class DatabaseInitializer {
         try {
             stmt.execute(sql);
         } catch (SQLException e) {
-            // coluna já existe — migração já aplicada, ignora
         }
     }
 }
