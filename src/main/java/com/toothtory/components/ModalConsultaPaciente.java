@@ -14,6 +14,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -56,12 +57,18 @@ public class ModalConsultaPaciente {
         painel.getChildren().add(scroll);
 
         painel.getChildren().add(rodape(janela, consultas));
+        painel.setPrefSize(632, 592);
 
-        VBox moldura = new VBox(painel);
-        moldura.getStyleClass().add("modal-moldura");
-        moldura.setPadding(new Insets(14));
+        Region backdrop = new Region();
+        backdrop.getStyleClass().add("modal-backdrop");
+        backdrop.setOnMouseClicked(evento -> janela.close());
 
-        Scene cena = new Scene(moldura, 660, 620, Color.TRANSPARENT);
+        StackPane centro = new StackPane(painel);
+        centro.setPadding(new Insets(14));
+
+        StackPane raiz = new StackPane(backdrop, centro);
+
+        Scene cena = new Scene(raiz, Color.TRANSPARENT);
         cena.getStylesheets().add(ModalConsultaPaciente.class.getResource("/styles/toothtory.css").toExternalForm());
         cena.setOnKeyPressed(evento -> {
             if (evento.getCode() == KeyCode.ESCAPE) {
@@ -69,6 +76,10 @@ public class ModalConsultaPaciente {
             }
         });
 
+        janela.setX(janelaDono.getX());
+        janela.setY(janelaDono.getY());
+        janela.setWidth(janelaDono.getWidth());
+        janela.setHeight(janelaDono.getHeight());
         janela.setScene(cena);
         janela.showAndWait();
     }

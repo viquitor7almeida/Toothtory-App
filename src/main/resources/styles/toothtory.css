@@ -1,4 +1,4 @@
-.root, .dialog-pane, .modal-moldura {
+.root, .dialog-pane {
     -gelo: #F3F7F8;
     -branco: #FFFFFF;
     -dourado: #C9A227;
@@ -976,10 +976,8 @@
     -fx-text-fill: -texto;
 }
 
-.modal-moldura {
-    -fx-font-family: "Inter";
-    -fx-font-size: 13px;
-    -fx-text-fill: -texto;
+.modal-backdrop {
+    -fx-background-color: rgba(62, 59, 60, 0.35);
 }
 
 .modal-consulta {
