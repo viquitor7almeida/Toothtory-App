@@ -130,8 +130,21 @@ public class ModalConsultaPaciente {
                 chip("Diabetes", anamnese.isDiabetes()),
                 chip("Hipertenso", anamnese.isHipertenso()),
                 chip("Rim/Pâncreas", anamnese.isProblemasRimPancreas()),
-                chip("Pulmonares", anamnese.isProblemasPulmonares()));
+                chip("Pulmonares", anamnese.isProblemasPulmonares()),
+                chip("Hormônio", anamnese.isUsoHormonio()),
+                chip("Grávida", anamnese.isGravida()),
+                chip("Alergia a medicamento", anamnese.isAlergiaMedicamento()),
+                chip("Medicamento contínuo", anamnese.isUsoMedicamentoContinuo()),
+                chip("Cardíacos", anamnese.isProblemasCardiacos()),
+                chip("Sanguíneos", anamnese.isProblemasSanguineos()));
         secao.getChildren().add(chips);
+        String detalhes = detalhesMedicamentosos(anamnese);
+        if (!detalhes.isEmpty()) {
+            Label linhaDetalhes = new Label(detalhes);
+            linhaDetalhes.getStyleClass().add("modal-texto");
+            linhaDetalhes.setWrapText(true);
+            secao.getChildren().add(linhaDetalhes);
+        }
         if (anamnese.getObservacoes() != null && !anamnese.getObservacoes().isBlank()) {
             Label observacoes = new Label(anamnese.getObservacoes());
             observacoes.getStyleClass().add("modal-texto");
@@ -146,6 +159,22 @@ public class ModalConsultaPaciente {
         Label chip = new Label(rotulo + ": " + (positivo ? "Sim" : "Não"));
         chip.getStyleClass().addAll("chip-anamnese", positivo ? "chip-sim" : "chip-nao");
         return chip;
+    }
+
+    private static String detalhesMedicamentosos(Anamnese anamnese) {
+        return Stream.of(
+                        detalheValido("Hormônio", anamnese.isUsoHormonio(), anamnese.getHormonioDetalhe()),
+                        detalheValido("Alergia", anamnese.isAlergiaMedicamento(), anamnese.getAlergiaMedicamentoDetalhe()),
+                        detalheValido("Medicamento contínuo", anamnese.isUsoMedicamentoContinuo(), anamnese.getMedicamentoContinuoDetalhe()))
+                .filter(valor -> valor != null)
+                .collect(Collectors.joining("  ·  "));
+    }
+
+    private static String detalheValido(String rotulo, boolean positivo, String detalhe) {
+        if (!positivo || detalhe == null || detalhe.isBlank()) {
+            return null;
+        }
+        return rotulo + ": " + detalhe;
     }
 
     private static VBox secaoConsultas(List<Consulta> consultas) {

@@ -39,6 +39,21 @@ public class AnamneseController {
     @FXML private RadioButton rbRimPancreasNao;
     @FXML private RadioButton rbPulmonaresSim;
     @FXML private RadioButton rbPulmonaresNao;
+    @FXML private RadioButton rbHormonioSim;
+    @FXML private RadioButton rbHormonioNao;
+    @FXML private TextField txtHormonioDetalhe;
+    @FXML private RadioButton rbGravidaSim;
+    @FXML private RadioButton rbGravidaNao;
+    @FXML private RadioButton rbAlergiaSim;
+    @FXML private RadioButton rbAlergiaNao;
+    @FXML private TextField txtAlergiaDetalhe;
+    @FXML private RadioButton rbMedicamentoSim;
+    @FXML private RadioButton rbMedicamentoNao;
+    @FXML private TextField txtMedicamentoDetalhe;
+    @FXML private RadioButton rbCardiacosSim;
+    @FXML private RadioButton rbCardiacosNao;
+    @FXML private RadioButton rbSanguineosSim;
+    @FXML private RadioButton rbSanguineosNao;
     @FXML private TextArea txtObservacoes;
 
     private final PacienteService pacienteService = new PacienteService();
@@ -49,17 +64,57 @@ public class AnamneseController {
     private final ToggleGroup grupoHipertenso = new ToggleGroup();
     private final ToggleGroup grupoRimPancreas = new ToggleGroup();
     private final ToggleGroup grupoPulmonares = new ToggleGroup();
+    private final ToggleGroup grupoHormonio = new ToggleGroup();
+    private final ToggleGroup grupoGravida = new ToggleGroup();
+    private final ToggleGroup grupoAlergia = new ToggleGroup();
+    private final ToggleGroup grupoMedicamento = new ToggleGroup();
+    private final ToggleGroup grupoCardiacos = new ToggleGroup();
+    private final ToggleGroup grupoSanguineos = new ToggleGroup();
     private Paciente pacienteSelecionado = null;
 
     @FXML
     public void initialize() {
         configurarScrollTela();
         configurarColunas();
+        configurarGrupos();
         tabelaPacientes.setPlaceholder(rotuloVazio("Nenhum paciente cadastrado"));
         carregarPacientes();
         txtBusca.textProperty().addListener((obs, old, novo) -> buscarPacientes());
         tabelaPacientes.getSelectionModel().selectedItemProperty().addListener((obs, old, novo) -> aoSelecionarPaciente(novo));
         definirFormularioAtivo(false);
+    }
+
+    private void configurarGrupos() {
+        vincularGrupo(grupoDiabetes, rbDiabetesSim, rbDiabetesNao);
+        vincularGrupo(grupoHipertenso, rbHipertensoSim, rbHipertensoNao);
+        vincularGrupo(grupoRimPancreas, rbRimPancreasSim, rbRimPancreasNao);
+        vincularGrupo(grupoPulmonares, rbPulmonaresSim, rbPulmonaresNao);
+        vincularGrupo(grupoHormonio, rbHormonioSim, rbHormonioNao);
+        vincularGrupo(grupoGravida, rbGravidaSim, rbGravidaNao);
+        vincularGrupo(grupoAlergia, rbAlergiaSim, rbAlergiaNao);
+        vincularGrupo(grupoMedicamento, rbMedicamentoSim, rbMedicamentoNao);
+        vincularGrupo(grupoCardiacos, rbCardiacosSim, rbCardiacosNao);
+        vincularGrupo(grupoSanguineos, rbSanguineosSim, rbSanguineosNao);
+
+        vincularDetalhe(grupoHormonio, txtHormonioDetalhe);
+        vincularDetalhe(grupoAlergia, txtAlergiaDetalhe);
+        vincularDetalhe(grupoMedicamento, txtMedicamentoDetalhe);
+    }
+
+    private void vincularGrupo(ToggleGroup grupo, RadioButton sim, RadioButton nao) {
+        sim.setToggleGroup(grupo);
+        nao.setToggleGroup(grupo);
+    }
+
+    private void vincularDetalhe(ToggleGroup grupo, TextField detalhe) {
+        grupo.selectedToggleProperty().addListener((obs, antigo, novo) -> {
+            boolean sim = novo instanceof RadioButton && ((RadioButton) novo).getText().equals("Sim");
+            detalhe.setVisible(sim);
+            detalhe.setManaged(sim);
+            if (!sim) {
+                detalhe.clear();
+            }
+        });
     }
 
     private void configurarScrollTela() {
@@ -138,6 +193,15 @@ public class AnamneseController {
             marcarResposta(rbHipertensoSim, rbHipertensoNao, anamnese.isHipertenso());
             marcarResposta(rbRimPancreasSim, rbRimPancreasNao, anamnese.isProblemasRimPancreas());
             marcarResposta(rbPulmonaresSim, rbPulmonaresNao, anamnese.isProblemasPulmonares());
+            marcarResposta(rbHormonioSim, rbHormonioNao, anamnese.isUsoHormonio());
+            marcarResposta(rbGravidaSim, rbGravidaNao, anamnese.isGravida());
+            marcarResposta(rbAlergiaSim, rbAlergiaNao, anamnese.isAlergiaMedicamento());
+            marcarResposta(rbMedicamentoSim, rbMedicamentoNao, anamnese.isUsoMedicamentoContinuo());
+            marcarResposta(rbCardiacosSim, rbCardiacosNao, anamnese.isProblemasCardiacos());
+            marcarResposta(rbSanguineosSim, rbSanguineosNao, anamnese.isProblemasSanguineos());
+            txtHormonioDetalhe.setText(anamnese.getHormonioDetalhe());
+            txtAlergiaDetalhe.setText(anamnese.getAlergiaMedicamentoDetalhe());
+            txtMedicamentoDetalhe.setText(anamnese.getMedicamentoContinuoDetalhe());
             txtObservacoes.setText(anamnese.getObservacoes());
         } else {
             marcarPadraoNao();
@@ -161,6 +225,15 @@ public class AnamneseController {
             anamnese.setHipertenso(rbHipertensoSim.isSelected());
             anamnese.setProblemasRimPancreas(rbRimPancreasSim.isSelected());
             anamnese.setProblemasPulmonares(rbPulmonaresSim.isSelected());
+            anamnese.setUsoHormonio(rbHormonioSim.isSelected());
+            anamnese.setHormonioDetalhe(rbHormonioSim.isSelected() ? txtHormonioDetalhe.getText() : null);
+            anamnese.setGravida(rbGravidaSim.isSelected());
+            anamnese.setAlergiaMedicamento(rbAlergiaSim.isSelected());
+            anamnese.setAlergiaMedicamentoDetalhe(rbAlergiaSim.isSelected() ? txtAlergiaDetalhe.getText() : null);
+            anamnese.setUsoMedicamentoContinuo(rbMedicamentoSim.isSelected());
+            anamnese.setMedicamentoContinuoDetalhe(rbMedicamentoSim.isSelected() ? txtMedicamentoDetalhe.getText() : null);
+            anamnese.setProblemasCardiacos(rbCardiacosSim.isSelected());
+            anamnese.setProblemasSanguineos(rbSanguineosSim.isSelected());
             anamnese.setObservacoes(txtObservacoes.getText());
             anamneseService.salvar(anamnese);
             carregarPacientes();
@@ -188,6 +261,15 @@ public class AnamneseController {
         rbHipertensoNao.setSelected(true);
         rbRimPancreasNao.setSelected(true);
         rbPulmonaresNao.setSelected(true);
+        rbHormonioNao.setSelected(true);
+        rbGravidaNao.setSelected(true);
+        rbAlergiaNao.setSelected(true);
+        rbMedicamentoNao.setSelected(true);
+        rbCardiacosNao.setSelected(true);
+        rbSanguineosNao.setSelected(true);
+        txtHormonioDetalhe.clear();
+        txtAlergiaDetalhe.clear();
+        txtMedicamentoDetalhe.clear();
     }
 
     private void marcarResposta(RadioButton sim, RadioButton nao, boolean valor) {

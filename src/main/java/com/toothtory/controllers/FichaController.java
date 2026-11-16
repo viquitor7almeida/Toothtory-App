@@ -19,7 +19,6 @@ import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 public class FichaController {
 
@@ -122,8 +121,8 @@ public class FichaController {
         titulo.getStyleClass().add("ficha-secao");
         card.getChildren().add(titulo);
 
-        Optional<Anamnese> anamnese = anamneseService.buscarPorPaciente(pacienteId);
-        if (anamnese.isEmpty()) {
+        Anamnese a = anamneseService.buscarPorPaciente(pacienteId).orElse(null);
+        if (a == null) {
             Label vazio = new Label("Sem anamnese registrada");
             vazio.getStyleClass().add("ficha-vazio");
             card.getChildren().add(vazio);
@@ -133,14 +132,20 @@ public class FichaController {
         GridPane respostas = new GridPane();
         respostas.setHgap(16);
         respostas.setVgap(4);
-        adicionarResposta(respostas, 0, 0, "Diabetes", anamnese.get().isDiabetes());
-        adicionarResposta(respostas, 1, 0, "Hipertensão", anamnese.get().isHipertenso());
-        adicionarResposta(respostas, 0, 1, "Rim/Pâncreas", anamnese.get().isProblemasRimPancreas());
-        adicionarResposta(respostas, 1, 1, "Pulmonares", anamnese.get().isProblemasPulmonares());
+        adicionarResposta(respostas, 0, 0, "Diabetes", a.isDiabetes(), null);
+        adicionarResposta(respostas, 1, 0, "Hipertensão", a.isHipertenso(), null);
+        adicionarResposta(respostas, 0, 1, "Rim/Pâncreas", a.isProblemasRimPancreas(), null);
+        adicionarResposta(respostas, 1, 1, "Pulmonares", a.isProblemasPulmonares(), null);
+        adicionarResposta(respostas, 0, 2, "Hormônio", a.isUsoHormonio(), a.getHormonioDetalhe());
+        adicionarResposta(respostas, 1, 2, "Grávida", a.isGravida(), null);
+        adicionarResposta(respostas, 0, 3, "Alergia a medicamento", a.isAlergiaMedicamento(), a.getAlergiaMedicamentoDetalhe());
+        adicionarResposta(respostas, 1, 3, "Medicamento contínuo", a.isUsoMedicamentoContinuo(), a.getMedicamentoContinuoDetalhe());
+        adicionarResposta(respostas, 0, 4, "Cardíacos", a.isProblemasCardiacos(), null);
+        adicionarResposta(respostas, 1, 4, "Sanguíneos", a.isProblemasSanguineos(), null);
         card.getChildren().add(respostas);
 
-        if (anamnese.get().getObservacoes() != null && !anamnese.get().getObservacoes().trim().isEmpty()) {
-            Label obs = new Label("Obs: " + anamnese.get().getObservacoes());
+        if (a.getObservacoes() != null && !a.getObservacoes().trim().isEmpty()) {
+            Label obs = new Label("Obs: " + a.getObservacoes());
             obs.getStyleClass().add("ficha-vazio");
             obs.setWrapText(true);
             card.getChildren().add(obs);
@@ -148,11 +153,14 @@ public class FichaController {
         return card;
     }
 
-    private void adicionarResposta(GridPane respostas, int coluna, int linha, String rotulo, boolean valor) {
+    private void adicionarResposta(GridPane respostas, int coluna, int linha, String rotulo, boolean valor, String detalhe) {
         Label pergunta = new Label(rotulo + ":");
         pergunta.getStyleClass().add("ficha-anamnese-rotulo");
-        Label resposta = new Label(valor ? "Sim" : "Não");
+        String texto = valor && detalhe != null && !detalhe.trim().isEmpty() ? "Sim — " + detalhe : (valor ? "Sim" : "Não");
+        Label resposta = new Label(texto);
         resposta.getStyleClass().add(valor ? "ficha-anamnese-sim" : "ficha-anamnese-nao");
+        resposta.setWrapText(true);
+        resposta.setMaxWidth(200);
         HBox item = new HBox(6, pergunta, resposta);
         respostas.add(item, coluna, linha);
     }
