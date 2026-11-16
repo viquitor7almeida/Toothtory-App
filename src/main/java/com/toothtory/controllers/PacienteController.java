@@ -1,8 +1,13 @@
 package com.toothtory.controllers;
 
 import com.toothtory.components.Alerta;
+import com.toothtory.components.ModalConsultaPaciente;
 import com.toothtory.components.Notificacao;
+import com.toothtory.services.AnamneseService;
+import com.toothtory.services.ConsultaService;
 import com.toothtory.services.PacienteService;
+import com.toothtory.domain.entities.Anamnese;
+import com.toothtory.domain.entities.Consulta;
 import com.toothtory.domain.entities.Paciente;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +15,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 public class PacienteController {
     @FXML private ScrollPane scrollTela;
@@ -28,6 +35,8 @@ public class PacienteController {
     @FXML private TextField txtCelular;
 
     private final PacienteService service = new PacienteService();
+    private final AnamneseService anamneseService = new AnamneseService();
+    private final ConsultaService consultaService = new ConsultaService();
     private ObservableList<Paciente> pacientesList = FXCollections.observableArrayList();
     private Long idEditando = null;
 
@@ -78,6 +87,18 @@ public class PacienteController {
         } else {
             pacientesList.setAll(service.buscarPorNome(termo));
         }
+    }
+
+    @FXML
+    private void consultarPaciente() {
+        Paciente selecionado = tabelaPacientes.getSelectionModel().getSelectedItem();
+        if (selecionado == null) {
+            Notificacao.aviso("Selecione um paciente para consultar.");
+            return;
+        }
+        Anamnese anamnese = anamneseService.buscarPorPaciente(selecionado.getId()).orElse(null);
+        List<Consulta> consultas = consultaService.buscarPorPaciente(selecionado.getId());
+        ModalConsultaPaciente.mostrar(tabelaPacientes.getScene().getWindow(), selecionado, anamnese, consultas);
     }
 
     @FXML

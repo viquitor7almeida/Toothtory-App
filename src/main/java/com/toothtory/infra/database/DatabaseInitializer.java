@@ -56,6 +56,15 @@ public class DatabaseInitializer {
                 hipertenso INTEGER NOT NULL DEFAULT 0,
                 problemasRimPancreas INTEGER NOT NULL DEFAULT 0,
                 problemasPulmonares INTEGER NOT NULL DEFAULT 0,
+                usoHormonio INTEGER NOT NULL DEFAULT 0,
+                hormonioDetalhe TEXT,
+                gravida INTEGER NOT NULL DEFAULT 0,
+                alergiaMedicamento INTEGER NOT NULL DEFAULT 0,
+                alergiaMedicamentoDetalhe TEXT,
+                usoMedicamentoContinuo INTEGER NOT NULL DEFAULT 0,
+                medicamentoContinuoDetalhe TEXT,
+                problemasCardiacos INTEGER NOT NULL DEFAULT 0,
+                problemasSanguineos INTEGER NOT NULL DEFAULT 0,
                 observacoes TEXT,
                 dataCriacao TEXT NOT NULL,
                 dataAtualizacao TEXT NOT NULL,
@@ -70,6 +79,15 @@ public class DatabaseInitializer {
             stmt.execute(createGastos);
             stmt.execute(createAnamnese);
             migrarColuna(stmt, "ALTER TABLE pacientes ADD COLUMN cpf TEXT");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN usoHormonio INTEGER NOT NULL DEFAULT 0");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN hormonioDetalhe TEXT");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN gravida INTEGER NOT NULL DEFAULT 0");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN alergiaMedicamento INTEGER NOT NULL DEFAULT 0");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN alergiaMedicamentoDetalhe TEXT");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN usoMedicamentoContinuo INTEGER NOT NULL DEFAULT 0");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN medicamentoContinuoDetalhe TEXT");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN problemasCardiacos INTEGER NOT NULL DEFAULT 0");
+            migrarColuna(stmt, "ALTER TABLE anamnese ADD COLUMN problemasSanguineos INTEGER NOT NULL DEFAULT 0");
         } catch (SQLException e) {
             e.printStackTrace();
         }

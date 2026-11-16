@@ -41,6 +41,39 @@
                                 <RadioButton fx:id="rbPulmonaresSim" text="Sim"/>
                                 <RadioButton fx:id="rbPulmonaresNao" text="Não"/>
                             </HBox>
+                            <Label text="Faz uso de algum hormônio?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbHormonioSim" text="Sim"/>
+                                <RadioButton fx:id="rbHormonioNao" text="Não"/>
+                            </HBox>
+                            <TextField fx:id="txtHormonioDetalhe" promptText="Qual?" visible="false" managed="false"/>
+                            <Label text="Grávida ou suspeita de gravidez?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbGravidaSim" text="Sim"/>
+                                <RadioButton fx:id="rbGravidaNao" text="Não"/>
+                            </HBox>
+                            <Label text="Alergia a algum medicamento?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbAlergiaSim" text="Sim"/>
+                                <RadioButton fx:id="rbAlergiaNao" text="Não"/>
+                            </HBox>
+                            <TextField fx:id="txtAlergiaDetalhe" promptText="Qual?" visible="false" managed="false"/>
+                            <Label text="Faz uso de medicamento contínuo ou controlado?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbMedicamentoSim" text="Sim"/>
+                                <RadioButton fx:id="rbMedicamentoNao" text="Não"/>
+                            </HBox>
+                            <TextField fx:id="txtMedicamentoDetalhe" promptText="Qual?" visible="false" managed="false"/>
+                            <Label text="Possui problemas cardíacos?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbCardiacosSim" text="Sim"/>
+                                <RadioButton fx:id="rbCardiacosNao" text="Não"/>
+                            </HBox>
+                            <Label text="Tem problemas sanguíneos?" styleClass="rotulo-campo"/>
+                            <HBox spacing="10">
+                                <RadioButton fx:id="rbSanguineosSim" text="Sim"/>
+                                <RadioButton fx:id="rbSanguineosNao" text="Não"/>
+                            </HBox>
                             <Label text="Observações" styleClass="rotulo-campo"/>
                             <TextArea fx:id="txtObservacoes" prefHeight="70"/>
                             <HBox spacing="10">

@@ -8,6 +8,7 @@
             <HBox spacing="10">
                 <TextField fx:id="txtBusca" promptText="Buscar por nome..." HBox.hgrow="ALWAYS"/>
                 <Button text="Buscar" styleClass="button-primario" onAction="#buscarPacientes"/>
+                <Button text="Consultar" onAction="#consultarPaciente"/>
             </HBox>
             <TableView fx:id="tabelaPacientes" VBox.vgrow="ALWAYS">
                 <columns>
