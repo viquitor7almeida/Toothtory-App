@@ -33,9 +33,9 @@ public class Sidebar extends VBox {
 
         getChildren().addAll(cabecalho, divisor);
         adicionarItem("dashboard", "Home");
-        adicionarItem("ficha", "Ficha"); //fazer tela de ficha com todas as informações de anamnese e consulta do usuario via id
+        adicionarItem("ficha", "Ficha"); 
         adicionarItem("pacientes", "Pacientes");
-        adicionarItem("anamnese", "Anamnese"); // ficha + problemas pulmonares e renais
+        adicionarItem("anamnese", "Anamnese"); 
         adicionarItem("procedimentos", "Procedimentos");
         adicionarItem("consultas", "Consultas");
         adicionarItem("financeiro", "Financeiro");
